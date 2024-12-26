@@ -44,7 +44,7 @@ sequenceDiagram
     participant Bot
     participant API
     participant ThirdParty
-
+    
     Bot->>API: Assistance Request
     activate API
     API->>ThirdParty: ThirdParty Message
@@ -76,7 +76,7 @@ sequenceDiagram
     participant db as Database
     participant bh as Background Handler
     participant tp as Third Party
-
+    
     Bot->>api: Create an Assistance Request
     activate api
     api->>db: Store Assistance Request
@@ -136,14 +136,14 @@ sequenceDiagram
     participant bk as Message Broker
     participant c as Consumer
     participant tp as Third Party
-
+    
     Bot->>api: Create an Assistance Request
     activate api
     api->>db: Store Assistance Request
     activate db
     api-->>Bot: Assistance Response
     deactivate api
-
+    
     db-->>p: Assistance Request Created
     activate p
     deactivate db
@@ -151,7 +151,7 @@ sequenceDiagram
     activate bk
     deactivate bk
     deactivate p
-
+    
     bk->>c: Notify Assistance Request
     activate bk
     activate c
@@ -183,7 +183,7 @@ Pro:
 Cons:
 
 - The outbox pattern requires more complex components to consolidate published and pending messages. Additionally, its implementation relies on certain storage product features or capabilities that can lead to vendor locking.
-- Message-broker and event-driven architectures have some well-known problems that must be addressed, such as event consistency, compensation mechanisms, and event duplication.
+- Message-broker and event-driven architectures have some well-known problems that must be addressed, such as event consistency, compensation mechanisms, and event duplication.  
 
 ## Decision Outcome
 
