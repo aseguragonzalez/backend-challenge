@@ -1,4 +1,3 @@
-
 from src.domain.exceptions.domain_error import DomainError
 
 

@@ -4,6 +4,7 @@ from fastapi.security import APIKeyHeader
 from src.infrastructure.ports.api.dependencies import settings
 from src.infrastructure.ports.api.settings import Settings
 
+
 api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
 

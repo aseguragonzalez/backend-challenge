@@ -1,8 +1,9 @@
+from typing import Any
+from uuid import UUID
+
 from fastapi import status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Any
-from uuid import UUID
 
 from src.infrastructure.ports.api.models import BadRequestError, NotFoundError
 

@@ -1,15 +1,14 @@
-from pydantic import BaseModel, Field
 from uuid import UUID
 
+from pydantic import BaseModel, Field
+
 from src.domain.entities import AssistanceRequest as Assistance
-from src.domain.value_objects import Topic, Status
+from src.domain.value_objects import Status, Topic
 
 
 class CreateNewAssistanceRequest(BaseModel):
     topic: Topic = Field(
-        title="Topic name",
-        description="Topic related to the assistance request.",
-        examples=["sales", "pricing"]
+        title="Topic name", description="Topic related to the assistance request.", examples=["sales", "pricing"]
     )
     description: str = Field(
         title="Assistance request description",
@@ -26,9 +25,7 @@ class AssistanceRequest(BaseModel):
         examples=["649757dcee7d6681992a9c22"],
     )
     topic: Topic = Field(
-        title="Topic name",
-        description="Topic related to the assistance request.",
-        examples=["sales", "pricing"]
+        title="Topic name", description="Topic related to the assistance request.", examples=["sales", "pricing"]
     )
     description: str = Field(
         title="Assistance request description",
@@ -48,5 +45,5 @@ class AssistanceRequest(BaseModel):
             id=assistance_request.id,
             topic=assistance_request.topic,
             description=assistance_request.description,
-            status=assistance_request.status
+            status=assistance_request.status,
         )

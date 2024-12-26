@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from fastapi import status
 from pydantic import BaseModel
 
@@ -14,17 +15,15 @@ class AssistanceAccepted(BaseModel):
 
     @staticmethod
     def build(id: UUID) -> "AssistanceAccepted":
-        return AssistanceAccepted(
-            id=id, status=Status.Accepted, link=f"/api/assistances/{id}"
-        )
+        return AssistanceAccepted(id=id, status=Status.Accepted, link=f"/api/assistances/{id}")
 
 
 class CreatedRequestResponse(ResponseBase):
     def __init__(self, model: AssistanceAccepted):
         super().__init__(
-          status_code=status.HTTP_202_ACCEPTED,
-          content=model,
-          headers={},
+            status_code=status.HTTP_202_ACCEPTED,
+            content=model,
+            headers={},
         )
 
 

@@ -1,9 +1,10 @@
-from fastapi import status
 from unittest.mock import Mock
 
+from fastapi import status
+
 from src.domain.entities import AssistanceRequest
-from src.domain.value_objects import Topic, Status
 from src.domain.exceptions import AssistanceRequestNotFoundError
+from src.domain.value_objects import Status, Topic
 
 
 def test_retrieve_request(faker, client, assistances_repository):

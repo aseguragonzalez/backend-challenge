@@ -1,12 +1,11 @@
 from typing import Any
 from uuid import UUID, uuid4
 
-from src.domain.value_objects import Status, Topic
 from src.domain.exceptions import UnavailableChangeOfStatusError
+from src.domain.value_objects import Status, Topic
 
 
 class AssistanceRequest:
-
     def __init__(self, id: UUID, topic: Topic, description: str, status: Status):
         self._id = id
         self._topic = topic
@@ -45,7 +44,7 @@ class AssistanceRequest:
         if not isinstance(other, AssistanceRequest):
             return False
 
-        return (self.id == other.id)
+        return self.id == other.id
 
     @classmethod
     def new(cls, topic: Topic, description: str, id: UUID = uuid4()) -> "AssistanceRequest":

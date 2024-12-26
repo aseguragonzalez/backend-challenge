@@ -1,7 +1,8 @@
 import pytest
-from src.domain.exceptions import UnavailableChangeOfStatusError
+
 from src.domain.entities import AssistanceRequest
-from src.domain.value_objects import Topic, Status
+from src.domain.exceptions import UnavailableChangeOfStatusError
+from src.domain.value_objects import Status, Topic
 
 
 def test_new_assistance_request(faker):
@@ -23,9 +24,7 @@ def test_stored_assistance_request(faker):
     status = faker.random_element(elements=[Status.Accepted, Status.Succeeded, Status.Failed])
     description = faker.sentence()
 
-    assistance_request = AssistanceRequest.stored(
-        id=id, topic=topic, description=description, status=status
-    )
+    assistance_request = AssistanceRequest.stored(id=id, topic=topic, description=description, status=status)
 
     assert assistance_request.id == id
     assert assistance_request.topic == topic
@@ -37,7 +36,7 @@ def test_failed_assistance_request(faker):
     assistance_request = AssistanceRequest.new(
         id=faker.uuid4(),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
-        description=faker.sentence()
+        description=faker.sentence(),
     )
 
     assistance_request.failed()
@@ -50,7 +49,7 @@ def test_failed_assistance_request_unavailable_change_of_status_error(faker):
         id=faker.uuid4(),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
         description=faker.sentence(),
-        status=faker.random_element(elements=[Status.Failed, Status.Succeeded])
+        status=faker.random_element(elements=[Status.Failed, Status.Succeeded]),
     )
 
     with pytest.raises(UnavailableChangeOfStatusError):
@@ -61,7 +60,7 @@ def test_succeeded_assistance_request(faker):
     assistance_request = AssistanceRequest.new(
         id=faker.uuid4(),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
-        description=faker.sentence()
+        description=faker.sentence(),
     )
 
     assistance_request.succeeded()
@@ -74,7 +73,7 @@ def test_succeeded_assistance_request_unavailable_change_of_status_error(faker):
         id=faker.uuid4(),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
         description=faker.sentence(),
-        status=faker.random_element(elements=[Status.Failed, Status.Succeeded])
+        status=faker.random_element(elements=[Status.Failed, Status.Succeeded]),
     )
 
     with pytest.raises(UnavailableChangeOfStatusError):
