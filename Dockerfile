@@ -9,4 +9,9 @@ RUN pip install --no-cache-dir --upgrade -r /requirements.txt
 
 FROM packages AS app
 COPY . .
-CMD ["fastapi", "dev", "src/infrastructure/ports/api/main.py", "--host", "0.0.0.0", "--port", "80"]
+
+ENV PYTHONPATH=/home/app
+
+EXPOSE 80
+
+CMD ["fastapi", "run", "src/infrastructure/ports/api/main.py", "--host", "0.0.0.0", "--port", "80"]
