@@ -3,10 +3,10 @@ from unittest.mock import Mock
 import pytest
 from fastapi import testclient
 
+from src.application.services import CreateAssistanceService, GetAssistanceService
 from src.domain.repositories import AssistancesRepository
 from src.infrastructure.ports.api.dependencies import assistance_repository, settings
 from src.infrastructure.ports.api.main import app
-from src.infrastructure.ports.api.security import api_key
 from src.infrastructure.ports.api.settings import Settings
 
 
@@ -16,7 +16,7 @@ def headers():
 
 
 @pytest.fixture
-def fake_settings():
+def test_settings():
     return Settings(api_keys="fake-api-key")
 
 
@@ -26,8 +26,17 @@ def assistances_repository() -> AssistancesRepository:
 
 
 @pytest.fixture
-def client(assistances_repository, fake_settings):
+def create_assistance_service() -> CreateAssistanceService:
+    return Mock(CreateAssistanceService)
+
+
+@pytest.fixture
+def get_assistance_service() -> GetAssistanceService:
+    return Mock(GetAssistanceService)
+
+
+@pytest.fixture
+def client(assistances_repository, test_settings):
     app.dependency_overrides[assistance_repository] = lambda: assistances_repository
-    app.dependency_overrides[api_key] = lambda: None
-    app.dependency_overrides[settings] = lambda: fake_settings
+    app.dependency_overrides[settings] = lambda: test_settings
     return testclient.TestClient(app)

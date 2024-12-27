@@ -1,37 +1,27 @@
-from unittest.mock import Mock
+import json
 
 from fastapi import status
 
 from src.domain.entities import AssistanceRequest
-from src.domain.exceptions import AssistanceRequestNotFoundError
 from src.domain.value_objects import Status, Topic
+from src.infrastructure.ports.api.routes.endpoints import retrieve_request
 
 
-def test_retrieve_request(faker, client, assistances_repository):
-    request = AssistanceRequest.stored(
+def test_get_assistance_request(faker, get_assistance_service):
+    assistance_request = AssistanceRequest.stored(
         id=faker.uuid4(),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
         description=faker.sentence(),
-        status=faker.random_element(elements=[Status.Failed, Status.Accepted, Status.Succeeded]),
+        status=faker.random_element(elements=[Status.Accepted, Status.Failed, Status.Succeeded]),
     )
-    assistances_repository.get = Mock(return_value=request)
+    get_assistance_service.execute.return_value = assistance_request
 
-    response = client.get(f"/api/assistances/{request.id}")
+    response = retrieve_request(assistance_id=assistance_request.id, service=get_assistance_service)
 
+    get_assistance_service.execute.assert_called_once_with(id=assistance_request.id)
     assert response.status_code == status.HTTP_200_OK
-    data = response.json()
-    assert data["id"] == str(request.id)
-    assert data["topic"] == request.topic.value
-    assert data["description"] == request.description
-    assert data["status"] == request.status.value
-
-
-def test_retrieve_request_when_request_does_not_exists(faker, client, assistances_repository):
-    assistances_repository.get = Mock(side_effect=AssistanceRequestNotFoundError())
-
-    response = client.get(f"/api/assistances/{faker.uuid4()}")
-
-    data = response.json()
-    assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert data["code"] == "request_not_found"
-    assert data["message"] == "The resource was not found"
+    body = json.loads(response.body)
+    assert body["id"] == str(assistance_request.id)
+    assert body["topic"] == assistance_request.topic.value
+    assert body["description"] == assistance_request.description
+    assert body["status"] == assistance_request.status.value

@@ -28,13 +28,13 @@ class AssistanceRequest:
     def status(self) -> Status:
         return self._status
 
-    def failed(self) -> None:
+    def fail(self) -> None:
         if self._status != Status.Accepted:
             raise UnavailableChangeOfStatusError()
         self._status = Status.Failed
         return None
 
-    def succeeded(self) -> None:
+    def success(self) -> None:
         if self._status != Status.Accepted:
             raise UnavailableChangeOfStatusError()
         self._status = Status.Succeeded

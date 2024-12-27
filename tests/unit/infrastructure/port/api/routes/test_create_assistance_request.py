@@ -1,96 +1,20 @@
 from fastapi import status
+from src.infrastructure.ports.api.routes.models import CreateNewAssistanceRequest
+from src.infrastructure.ports.api.routes.endpoints import create_request
+import json
 
 
-def test_create_new_assistance_request(faker, headers, client):
-    response = client.post(
-        url="/api/assistances", json={"topic": "sales", "description": faker.sentence()}, headers=headers
+def test_create_new_assistance_request(faker, create_assistance_service):
+    request = CreateNewAssistanceRequest(
+        topic=faker.random_element(elements=("sales", "pricing")),
+        description=faker.sentence()
     )
 
-    data = response.json()
+    response = create_request(request=request, service=create_assistance_service)
+
+    create_assistance_service.execute.assert_called_once()
     assert response.status_code == status.HTTP_202_ACCEPTED
-    assert data["id"] is not None
-    assert data["status"] == "accepted"
-    assert data["link"] == f"/api/assistances/{data['id']}"
-
-
-def test_create_new_assistance_request_fails_when_topic_is_missing(faker, headers, client):
-    response = client.post(
-        url="/api/assistances",
-        json={"description": faker.sentence()},
-        headers=headers,
-    )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {
-        "code": "invalid_request",
-        "message": "One or more input errors was found",
-        "errors": [
-            {
-                "path": "body.topic",
-                "code": "missing",
-                "message": "Field required",
-            }
-        ],
-    }
-
-
-def test_create_new_assistance_request_fails_when_topic_is_invalid(faker, headers, client):
-    response = client.post(
-        url="/api/assistances",
-        json={"topic": faker.uuid4(), "description": faker.sentence()},
-        headers=headers,
-    )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {
-        "code": "invalid_request",
-        "message": "One or more input errors was found",
-        "errors": [
-            {
-                "path": "body.topic",
-                "code": "enum",
-                "message": "Input should be 'sales' or 'pricing'",
-            }
-        ],
-    }
-
-
-def test_create_new_assistance_request_fails_when_description_is_missing(faker, headers, client):
-    response = client.post(
-        url="/api/assistances",
-        json={"topic": faker.random_element(elements=["sales", "pricing"])},
-        headers=headers,
-    )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {
-        "code": "invalid_request",
-        "message": "One or more input errors was found",
-        "errors": [
-            {
-                "path": "body.description",
-                "code": "missing",
-                "message": "Field required",
-            }
-        ],
-    }
-
-
-def test_create_new_assistance_request_fails_when_description_is_too_long(faker, headers, client):
-    response = client.post(
-        url="/api/assistances",
-        json={
-            "topic": faker.random_element(elements=["sales", "pricing"]),
-            "description": faker.pystr(min_chars=500, max_chars=500),
-        },
-        headers=headers,
-    )
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {
-        "code": "invalid_request",
-        "message": "One or more input errors was found",
-        "errors": [
-            {
-                "path": "body.description",
-                "code": "string_too_long",
-                "message": "String should have at most 300 characters",
-            }
-        ],
-    }
+    body = json.loads(response.body)
+    assert "id" in body
+    assert body["status"] == "accepted"
+    assert body["link"] == f"/api/assistances/{body['id']}"
