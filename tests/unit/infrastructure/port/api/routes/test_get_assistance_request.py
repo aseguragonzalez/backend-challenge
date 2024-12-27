@@ -1,4 +1,5 @@
 import json
+from uuid import UUID
 
 from fastapi import status
 
@@ -9,7 +10,7 @@ from src.infrastructure.ports.api.routes.endpoints import retrieve_request
 
 def test_get_assistance_request(faker, get_assistance_service):
     assistance_request = AssistanceRequest.stored(
-        id=faker.uuid4(),
+        id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
         description=faker.sentence(),
         status=faker.random_element(elements=[Status.Accepted, Status.Failed, Status.Succeeded]),

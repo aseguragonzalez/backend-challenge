@@ -1,7 +1,8 @@
 from unittest.mock import Mock
 
 import pytest
-from fastapi import testclient
+from fastapi.testclient import TestClient
+from mongomock import MongoClient
 
 from src.application.services import CreateAssistanceService, GetAssistanceService
 from src.domain.repositories import AssistancesRepository
@@ -36,7 +37,17 @@ def get_assistance_service() -> GetAssistanceService:
 
 
 @pytest.fixture
+def mongo_db_client():
+    return MongoClient()
+
+
+@pytest.fixture
+def db_collection(mongo_db_client):
+    return mongo_db_client["test"]["assistances"]
+
+
+@pytest.fixture
 def client(assistances_repository, test_settings):
     app.dependency_overrides[assistance_repository] = lambda: assistances_repository
     app.dependency_overrides[settings] = lambda: test_settings
-    return testclient.TestClient(app)
+    return TestClient(app)
