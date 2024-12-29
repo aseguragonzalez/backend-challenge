@@ -14,4 +14,4 @@ ENV PYTHONPATH=/home/app
 
 EXPOSE 80
 
-CMD ["fastapi", "run", "src/infrastructure/ports/api/main.py", "--host", "0.0.0.0", "--port", "80"]
+CMD ["fastapi", "run", "src/infrastructure/ports/api/main.py", "--host", "0.0.0.0", "--port", "8000"]
