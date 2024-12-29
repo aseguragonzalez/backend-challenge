@@ -1,25 +1,18 @@
+from collections.abc import Generator
+from typing import Any
 from unittest.mock import Mock
+from uuid import uuid4
 
 import pytest
-from fastapi.testclient import TestClient
-from mongomock import MongoClient
+from pymongo import MongoClient
+from pymongo.collection import Collection
 
 from src.application.services import CreateAssistanceService, GetAssistanceService
 from src.domain.repositories import AssistancesRepository
 from src.domain.services import ChannelsService
-from src.infrastructure.ports.api.dependencies import assistance_repository, settings
-from src.infrastructure.ports.api.main import app
-from src.infrastructure.ports.api.settings import Settings
-
-
-@pytest.fixture
-def headers():
-    return {"X-API-Key": "fake-api-key"}
-
-
-@pytest.fixture
-def test_settings():
-    return Settings(api_keys="fake-api-key")
+from src.infrastructure.adapters.repositories import MongoDbSettings
+from src.seedwork.infrastructure.events import EventsDb, EventsDispatcher
+from src.seedwork.infrastructure.events.mongo_db import MongoDbEventsDbSettings
 
 
 @pytest.fixture
@@ -43,17 +36,58 @@ def get_assistance_service() -> GetAssistanceService:
 
 
 @pytest.fixture
-def mongo_db_client():
-    return MongoClient()
+def events_db_mock() -> EventsDb:
+    events_db = Mock(EventsDb)
+    events_db.exist.return_value = False
+    events_db.create.return_value = None
+    return events_db
 
 
 @pytest.fixture
-def db_collection(mongo_db_client):
-    return mongo_db_client["test"]["assistances"]
+def events_dispatcher_mock() -> EventsDispatcher:
+    events_dispatcher = Mock(EventsDispatcher)
+    events_dispatcher.dispatch.return_value = None
+    return events_dispatcher
+
+
+@pytest.fixture(scope="session")
+def mongo_db_settings(mongodb_container) -> MongoDbSettings:
+    mongo_db_url = mongodb_container.get_connection_url()
+    database_name = f"assistance_db_{str(uuid4())}"
+    return MongoDbSettings(
+        collection_name="assistances",
+        database_name=database_name,
+        database_url=mongo_db_url,
+    )
 
 
 @pytest.fixture
-def client(assistances_repository, test_settings):
-    app.dependency_overrides[assistance_repository] = lambda: assistances_repository
-    app.dependency_overrides[settings] = lambda: test_settings
-    return TestClient(app)
+def db_collection(mongo_db_settings: MongoDbSettings, mongo_client: MongoClient) -> Collection:
+    return mongo_client[mongo_db_settings.database_name][mongo_db_settings.collection_name]
+
+
+@pytest.fixture(scope="session")
+def events_db_settings(mongodb_container) -> MongoDbEventsDbSettings:
+    mongo_db_url = mongodb_container.get_connection_url()
+    database_name = f"events_db_{str(uuid4())}"
+    return MongoDbEventsDbSettings(
+        collection_name="events",
+        database_name=database_name,
+        database_url=mongo_db_url,
+    )
+
+
+@pytest.fixture
+def db_events_collection(events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient) -> Collection:
+    return mongo_client[events_db_settings.database_name][events_db_settings.collection_name]
+
+
+@pytest.fixture
+def clean_db(
+    mongo_db_settings: MongoDbSettings, events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient
+) -> Generator[Any, Any, Any]:
+    mongo_client.drop_database(mongo_db_settings.database_name)
+    mongo_client.drop_database(events_db_settings.database_name)
+    yield
+    mongo_client.drop_database(mongo_db_settings.database_name)
+    mongo_client.drop_database(events_db_settings.database_name)

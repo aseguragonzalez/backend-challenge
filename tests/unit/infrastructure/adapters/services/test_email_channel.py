@@ -9,26 +9,22 @@ from src.domain.value_objects import Topic
 from src.infrastructure.adapters.services import EmailChannel
 
 
-def test_send_should_send_email(faker):
+def test_send_should_send_email(faker, email_settings):
     client = Mock(SMTP)
-    from_address = faker.email()
-    to_address = faker.email()
     assistance_request = AssistanceRequest.new(
         topic=faker.random_element(elements=[Topic.Pricing, Topic.Sales]), description=faker.sentence()
     )
-    channel = EmailChannel(client=client, from_address=from_address, to_address=to_address)
+    channel = EmailChannel(client=client, settings=email_settings)
 
     channel.send(assistance_request=assistance_request)
 
     client.sendmail.assert_called_once_with(
-        msg=assistance_request.description, from_addr=from_address, to_addrs=to_address
+        msg=assistance_request.description, from_addr=email_settings.from_email, to_addrs=email_settings.to_email
     )
 
 
-def test_send_should_raise_unavailable_channel_error_when_client_raises_exception(faker):
+def test_send_should_raise_unavailable_channel_error_when_client_raises_exception(faker, email_settings):
     client = Mock(SMTP)
-    from_address = faker.email()
-    to_address = faker.email()
     assistance_request = AssistanceRequest.new(
         topic=faker.random_element(elements=[Topic.Pricing, Topic.Sales]), description=faker.sentence()
     )
@@ -40,7 +36,7 @@ def test_send_should_raise_unavailable_channel_error_when_client_raises_exceptio
             SMTPNotSupportedError(),
         ]
     )
-    channel = EmailChannel(client=client, from_address=from_address, to_address=to_address)
+    channel = EmailChannel(client=client, settings=email_settings)
 
     with pytest.raises(UnavailableChannelError):
         channel.send(assistance_request=assistance_request)

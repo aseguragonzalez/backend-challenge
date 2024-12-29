@@ -17,10 +17,10 @@ def test_save_should_store_an_assistant(faker, db_collection):
     id = str(assistance_request.id)
     repository = MongoDbAssistancesRepository(db_collection=db_collection)
 
-    repository.save(assistance_request=assistance_request)
+    repository.save(entity=assistance_request)
 
-    expected_assistance_request = db_collection.find_one({"id": id})
-    assert expected_assistance_request["id"] == id
+    expected_assistance_request = db_collection.find_one({"_id": id})
+    assert expected_assistance_request["_id"] == id
     assert expected_assistance_request["description"] == assistance_request.description
     assert expected_assistance_request["topic"] == assistance_request.topic.value
     assert expected_assistance_request["status"] == assistance_request.status.value
@@ -34,7 +34,7 @@ def test_save_should_update_an_assistance_request(faker, db_collection):
     )
     db_collection.insert_one(
         {
-            "id": str(assistance_request.id),
+            "_id": str(assistance_request.id),
             "topic": assistance_request.topic.value,
             "description": assistance_request.description,
             "status": assistance_request.status.value,
@@ -43,10 +43,10 @@ def test_save_should_update_an_assistance_request(faker, db_collection):
     repository = MongoDbAssistancesRepository(db_collection=db_collection)
 
     assistance_request.fail()
-    repository.save(assistance_request=assistance_request)
+    repository.save(entity=assistance_request)
 
-    expected_assistance_request = db_collection.find_one({"id": str(assistance_request.id)})
-    assert expected_assistance_request["id"] == str(assistance_request.id)
+    expected_assistance_request = db_collection.find_one({"_id": str(assistance_request.id)})
+    assert expected_assistance_request["_id"] == str(assistance_request.id)
     assert expected_assistance_request["description"] == assistance_request.description
     assert expected_assistance_request["topic"] == assistance_request.topic.value
     assert expected_assistance_request["status"] == assistance_request.status.value
@@ -61,7 +61,7 @@ def test_get_should_return_an_assistance_request(faker, db_collection):
     )
     db_collection.insert_one(
         {
-            "id": str(expected_assistance_request.id),
+            "_id": str(expected_assistance_request.id),
             "topic": expected_assistance_request.topic.value,
             "description": expected_assistance_request.description,
             "status": expected_assistance_request.status.value,
