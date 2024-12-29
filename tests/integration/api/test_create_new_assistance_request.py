@@ -3,10 +3,8 @@ from fastapi import status
 
 
 @pytest.mark.integration
-def test_create_new_assistance_request_should_return_an_accepted_assistance(faker, headers, client):
-    response = client.post(
-        url="/api/assistances", json={"topic": "sales", "description": faker.sentence()}, headers=headers
-    )
+def test_create_new_assistance_request_should_return_an_accepted_assistance(faker, client):
+    response = client.post(url="/api/assistances", json={"topic": "sales", "description": faker.sentence()})
 
     data = response.json()
     assert response.status_code == status.HTTP_202_ACCEPTED
@@ -16,11 +14,10 @@ def test_create_new_assistance_request_should_return_an_accepted_assistance(fake
 
 
 @pytest.mark.integration
-def test_create_new_assistance_request_should_fail_when_topic_is_missing(faker, headers, client):
+def test_create_new_assistance_request_should_fail_when_topic_is_missing(faker, client):
     response = client.post(
         url="/api/assistances",
         json={"description": faker.sentence()},
-        headers=headers,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {
@@ -36,11 +33,10 @@ def test_create_new_assistance_request_should_fail_when_topic_is_missing(faker, 
     }
 
 
-def test_create_new_assistance_request_should_fail_when_topic_is_invalid(faker, headers, client):
+def test_create_new_assistance_request_should_fail_when_topic_is_invalid(faker, client):
     response = client.post(
         url="/api/assistances",
         json={"topic": faker.uuid4(), "description": faker.sentence()},
-        headers=headers,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {
@@ -56,11 +52,10 @@ def test_create_new_assistance_request_should_fail_when_topic_is_invalid(faker, 
     }
 
 
-def test_create_new_assistance_request_should_fail_when_description_is_missing(faker, headers, client):
+def test_create_new_assistance_request_should_fail_when_description_is_missing(faker, client):
     response = client.post(
         url="/api/assistances",
         json={"topic": faker.random_element(elements=["sales", "pricing"])},
-        headers=headers,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {
@@ -76,14 +71,13 @@ def test_create_new_assistance_request_should_fail_when_description_is_missing(f
     }
 
 
-def test_create_new_assistance_request_should_fail_when_description_is_too_long(faker, headers, client):
+def test_create_new_assistance_request_should_fail_when_description_is_too_long(faker, client):
     response = client.post(
         url="/api/assistances",
         json={
             "topic": faker.random_element(elements=["sales", "pricing"]),
             "description": faker.pystr(min_chars=500, max_chars=500),
         },
-        headers=headers,
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json() == {
