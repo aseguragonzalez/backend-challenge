@@ -7,7 +7,7 @@ from src.domain.exceptions import UnavailableChangeOfStatusError
 from src.domain.value_objects import Status, Topic
 
 
-def test_new_assistance_request(faker):
+def test_new_should_create_assistance_request_instance(faker):
     id = UUID(faker.uuid4())
     topic = faker.random_element(elements=[Topic.Sales, Topic.Pricing])
     description = faker.sentence()
@@ -20,7 +20,7 @@ def test_new_assistance_request(faker):
     assert assistance_request.status == Status.Accepted
 
 
-def test_stored_assistance_request(faker):
+def test_stored_should_retrieve_an_assistance_request(faker):
     id = UUID(faker.uuid4())
     topic = faker.random_element(elements=[Topic.Sales, Topic.Pricing])
     status = faker.random_element(elements=[Status.Accepted, Status.Succeeded, Status.Failed])
@@ -34,7 +34,7 @@ def test_stored_assistance_request(faker):
     assert assistance_request.status == status
 
 
-def test_fail_assistance_request(faker):
+def test_fail_should_mark_as_failed(faker):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
@@ -46,7 +46,7 @@ def test_fail_assistance_request(faker):
     assert assistance_request.status == Status.Failed
 
 
-def test_fail_assistance_request_unavailable_change_of_status_error(faker):
+def test_fail_should_raise_an_unavailable_change_of_status_error_when_status_is_invalid(faker):
     assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
@@ -58,7 +58,7 @@ def test_fail_assistance_request_unavailable_change_of_status_error(faker):
         assistance_request.fail()
 
 
-def test_success_assistance_request(faker):
+def test_success_should_mark_as_succeeded(faker):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
@@ -70,7 +70,7 @@ def test_success_assistance_request(faker):
     assert assistance_request.status == Status.Succeeded
 
 
-def test_success_assistance_request_unavailable_change_of_status_error(faker):
+def test_success_should_raise_an_unavailable_change_of_status_error_when_status_is_invalid(faker):
     assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
@@ -82,7 +82,7 @@ def test_success_assistance_request_unavailable_change_of_status_error(faker):
         assistance_request.success()
 
 
-def test_equals_assistance_request_same_request(faker):
+def test_equals_should_be_true_when_compares_same_requests(faker):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
@@ -92,7 +92,7 @@ def test_equals_assistance_request_same_request(faker):
     assert assistance_request == assistance_request
 
 
-def test_equals_assistance_request_different_attributes_same_id(faker):
+def test_equals_should_be_true_when_compares_different_attributes_and_same_id(faker):
     id = UUID(faker.uuid4())
     assistance_request_1 = AssistanceRequest.new(
         id=id, topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]), description=faker.sentence()

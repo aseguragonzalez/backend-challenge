@@ -3,8 +3,7 @@ from typing import Any
 from fastapi import status
 
 from src.infrastructure.ports.api.models import BadRequestError, NotFoundError
-from src.infrastructure.ports.api.routes.models import AssistanceRequest
-from src.infrastructure.ports.api.routes.responses import AssistanceAccepted
+from src.infrastructure.ports.api.routes.models import AssistanceAccepted, AssistanceRequest
 
 
 requests_endpoint_definition: dict[str, Any] = {

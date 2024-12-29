@@ -1,7 +1,7 @@
 from fastapi import status
 
 from src.infrastructure.ports.api.responses import ResponseBase
-from src.infrastructure.ports.api.routes.responses.assistance_accepted import AssistanceAccepted
+from src.infrastructure.ports.api.routes.models import AssistanceAccepted
 
 
 class CreatedRequestResponse(ResponseBase):

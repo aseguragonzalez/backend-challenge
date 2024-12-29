@@ -3,7 +3,7 @@ from fastapi import status
 
 
 @pytest.mark.integration
-def test_create_new_assistance_request(faker, headers, client):
+def test_create_new_assistance_request_should_return_an_accepted_assistance(faker, headers, client):
     response = client.post(
         url="/api/assistances", json={"topic": "sales", "description": faker.sentence()}, headers=headers
     )
@@ -16,7 +16,7 @@ def test_create_new_assistance_request(faker, headers, client):
 
 
 @pytest.mark.integration
-def test_create_new_assistance_request_fails_when_topic_is_missing(faker, headers, client):
+def test_create_new_assistance_request_should_fail_when_topic_is_missing(faker, headers, client):
     response = client.post(
         url="/api/assistances",
         json={"description": faker.sentence()},
@@ -36,7 +36,7 @@ def test_create_new_assistance_request_fails_when_topic_is_missing(faker, header
     }
 
 
-def test_create_new_assistance_request_fails_when_topic_is_invalid(faker, headers, client):
+def test_create_new_assistance_request_should_fail_when_topic_is_invalid(faker, headers, client):
     response = client.post(
         url="/api/assistances",
         json={"topic": faker.uuid4(), "description": faker.sentence()},
@@ -56,7 +56,7 @@ def test_create_new_assistance_request_fails_when_topic_is_invalid(faker, header
     }
 
 
-def test_create_new_assistance_request_fails_when_description_is_missing(faker, headers, client):
+def test_create_new_assistance_request_should_fail_when_description_is_missing(faker, headers, client):
     response = client.post(
         url="/api/assistances",
         json={"topic": faker.random_element(elements=["sales", "pricing"])},
@@ -76,7 +76,7 @@ def test_create_new_assistance_request_fails_when_description_is_missing(faker, 
     }
 
 
-def test_create_new_assistance_request_fails_when_description_is_too_long(faker, headers, client):
+def test_create_new_assistance_request_should_fail_when_description_is_too_long(faker, headers, client):
     response = client.post(
         url="/api/assistances",
         json={

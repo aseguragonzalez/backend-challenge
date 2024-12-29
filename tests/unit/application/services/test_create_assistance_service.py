@@ -5,7 +5,7 @@ from src.domain.entities import AssistanceRequest
 from src.domain.value_objects import Topic
 
 
-def test_create_assistant_request(faker, assistances_repository):
+def test_execute_should_be_ok(faker, assistances_repository):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),

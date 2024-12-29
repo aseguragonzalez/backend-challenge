@@ -8,7 +8,7 @@ from src.domain.value_objects import Status, Topic
 from src.infrastructure.adapters.repositories import MongoDbAssistancesRepository
 
 
-def test_mongo_db_assistances_repository_save(faker, db_collection):
+def test_save_should_be_ok(faker, db_collection):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
         description=faker.sentence(),
@@ -26,7 +26,7 @@ def test_mongo_db_assistances_repository_save(faker, db_collection):
     assert expected_assistance_request["status"] == assistance_request.status.value
 
 
-def test_mongo_db_assistances_repository_get(faker, db_collection):
+def test_get_should_return_an_assistance_request(faker, db_collection):
     expected_assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
         description=faker.sentence(),
@@ -43,15 +43,15 @@ def test_mongo_db_assistances_repository_get(faker, db_collection):
     )
     repository = MongoDbAssistancesRepository(db_collection=db_collection)
 
-    assistant_request = repository.get(id=expected_assistance_request.id)
+    assistance_request = repository.get(id=expected_assistance_request.id)
 
-    assert assistant_request.id == expected_assistance_request.id
-    assert assistant_request.description == expected_assistance_request.description
-    assert assistant_request.status == expected_assistance_request.status
-    assert assistant_request.topic == expected_assistance_request.topic
+    assert assistance_request.id == expected_assistance_request.id
+    assert assistance_request.description == expected_assistance_request.description
+    assert assistance_request.status == expected_assistance_request.status
+    assert assistance_request.topic == expected_assistance_request.topic
 
 
-def test_mongo_db_assistances_repository_get_raises_assistance_request_not_found(faker, db_collection):
+def test_get_should_raises_assistance_request_not_found_when_assistance_does_not_exist(faker, db_collection):
     repository = MongoDbAssistancesRepository(db_collection=db_collection)
 
     with pytest.raises(AssistanceRequestNotFoundError):

@@ -9,8 +9,9 @@ from src.infrastructure.ports.api.routes.constants import (
     requests_endpoint_get,
     requests_enpoint_post,
 )
-from src.infrastructure.ports.api.routes.models import AssistanceRequest, CreateNewAssistanceRequest
-from src.infrastructure.ports.api.routes.responses import AssistanceAccepted, CreatedRequestResponse, RequestResponse
+from src.infrastructure.ports.api.routes.models import AssistanceAccepted, AssistanceRequest
+from src.infrastructure.ports.api.routes.requests import CreateNewAssistanceRequest
+from src.infrastructure.ports.api.routes.responses import AssistanceRequestResponse, CreatedRequestResponse
 
 
 router = APIRouter(**requests_endpoint_definition)
@@ -28,7 +29,7 @@ def create_request(
 @router.get(**requests_endpoint_get)
 def retrieve_request(
     assistance_id: UUID, service: GetAssistanceService = Depends(get_assistance_service)
-) -> RequestResponse:
+) -> AssistanceRequestResponse:
     assistance_request = service.execute(id=assistance_id)
     assistance_request_model = AssistanceRequest.from_entity(assistance_request=assistance_request)
-    return RequestResponse(model=assistance_request_model)
+    return AssistanceRequestResponse(model=assistance_request_model)

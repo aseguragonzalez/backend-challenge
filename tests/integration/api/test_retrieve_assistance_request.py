@@ -7,7 +7,7 @@ from src.domain.exceptions import AssistanceRequestNotFoundError
 from src.domain.value_objects import Status, Topic
 
 
-def test_retrieve_request(faker, headers, client, assistances_repository):
+def test_retrieve_request_should_return_an_assistance_request(faker, headers, client, assistances_repository):
     request = AssistanceRequest.stored(
         id=faker.uuid4(),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
@@ -26,7 +26,9 @@ def test_retrieve_request(faker, headers, client, assistances_repository):
     assert data["status"] == request.status.value
 
 
-def test_retrieve_request_when_request_does_not_exists(faker, headers, client, assistances_repository):
+def test_retrieve_request_should_return_not_found_when_request_does_not_exist(
+    faker, headers, client, assistances_repository
+):
     assistances_repository.get = Mock(side_effect=AssistanceRequestNotFoundError())
 
     response = client.get(f"/api/assistances/{faker.uuid4()}", headers=headers)

@@ -5,7 +5,7 @@ from src.domain.entities import AssistanceRequest
 from src.domain.value_objects import Status, Topic
 
 
-def test_get_assistance_request(faker, assistances_repository):
+def test_execute_should_return_an_assistance_request(faker, assistances_repository):
     expected_assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
