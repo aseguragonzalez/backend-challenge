@@ -6,6 +6,7 @@ from mongomock import MongoClient
 
 from src.application.services import CreateAssistanceService, GetAssistanceService
 from src.domain.repositories import AssistancesRepository
+from src.domain.services import ChannelsService
 from src.infrastructure.ports.api.dependencies import assistance_repository, settings
 from src.infrastructure.ports.api.main import app
 from src.infrastructure.ports.api.settings import Settings
@@ -24,6 +25,11 @@ def test_settings():
 @pytest.fixture
 def assistances_repository() -> AssistancesRepository:
     return Mock(AssistancesRepository)
+
+
+@pytest.fixture
+def channels_service() -> ChannelsService:
+    return Mock(ChannelsService)
 
 
 @pytest.fixture
