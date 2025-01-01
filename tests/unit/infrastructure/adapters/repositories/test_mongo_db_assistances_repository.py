@@ -8,7 +8,7 @@ from src.domain.value_objects import Status, Topic
 from src.infrastructure.adapters.repositories import MongoDbAssistancesRepository
 
 
-def test_save_should_be_ok(faker, db_collection):
+def test_save_should_store_an_assistant(faker, db_collection):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
         description=faker.sentence(),
@@ -21,6 +21,32 @@ def test_save_should_be_ok(faker, db_collection):
 
     expected_assistance_request = db_collection.find_one({"id": id})
     assert expected_assistance_request["id"] == id
+    assert expected_assistance_request["description"] == assistance_request.description
+    assert expected_assistance_request["topic"] == assistance_request.topic.value
+    assert expected_assistance_request["status"] == assistance_request.status.value
+
+
+def test_save_should_update_an_assistance_request(faker, db_collection):
+    assistance_request = AssistanceRequest.new(
+        id=UUID(faker.uuid4()),
+        description=faker.sentence(),
+        topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
+    )
+    db_collection.insert_one(
+        {
+            "id": str(assistance_request.id),
+            "topic": assistance_request.topic.value,
+            "description": assistance_request.description,
+            "status": assistance_request.status.value,
+        }
+    )
+    repository = MongoDbAssistancesRepository(db_collection=db_collection)
+
+    assistance_request.fail()
+    repository.save(assistance_request=assistance_request)
+
+    expected_assistance_request = db_collection.find_one({"id": str(assistance_request.id)})
+    assert expected_assistance_request["id"] == str(assistance_request.id)
     assert expected_assistance_request["description"] == assistance_request.description
     assert expected_assistance_request["topic"] == assistance_request.topic.value
     assert expected_assistance_request["status"] == assistance_request.status.value
