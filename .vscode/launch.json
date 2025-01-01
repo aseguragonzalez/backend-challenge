@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "args": [
+        "dev",
+        "src/infrastructure/ports/api/main.py",
+        "--reload",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ],
+      "jinja": true,
+      "module": "fastapi",
+      "name": "Python Debugger: FastAPI",
+      "request": "launch",
+      "type": "debugpy"
+    }
+  ],
+  "version": "0.2.0"
+}
