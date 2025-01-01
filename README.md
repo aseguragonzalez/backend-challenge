@@ -9,8 +9,8 @@ The product department wants a system to be notified when a customer requests as
 
 You need to expose an API endpoint that will receive this call and depending on the selected topic will forward it to a different channel:
 
-```
-Topic    | Channel
+``` 
+Topic    | Channel   
 ----------------------
 Sales    | Slack
 Pricing  | Email
