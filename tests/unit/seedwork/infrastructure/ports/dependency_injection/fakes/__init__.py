@@ -9,7 +9,7 @@ from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.externa
 from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.nested_service import NestedService
 from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.resource_client import ResourceClient
 from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.resource_service import ResourceService
-from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.service import Service
+from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.service_component import ServiceComponent
 from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.service_decorator import ServiceDecorator
 from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.third_party_service import ThirdPartyService
 from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.third_party_settings import ThirdPartySettings
@@ -24,7 +24,7 @@ __all__ = (
     "NestedService",
     "ResourceClient",
     "ResourceService",
-    "Service",
+    "ServiceComponent",
     "ThirdPartyService",
     "ThirdPartySettings",
     "ServiceDecorator",
