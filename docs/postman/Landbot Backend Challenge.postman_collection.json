@@ -1,0 +1,135 @@
+{
+  "auth": {
+    "apikey": [
+      {
+        "key": "value",
+        "type": "string",
+        "value": "{{api_key}}"
+      },
+      {
+        "key": "key",
+        "type": "string",
+        "value": "X-API-KEY"
+      }
+    ],
+    "type": "apikey"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          ""
+        ],
+        "packages": {},
+        "type": "text/javascript"
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          ""
+        ],
+        "packages": {},
+        "type": "text/javascript"
+      }
+    }
+  ],
+  "info": {
+    "_exporter_id": "30188972",
+    "_postman_id": "5c910172-c8f9-4d59-b060-54b3bfc444cd",
+    "name": "Landbot Backend Challenge",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "API docs",
+      "request": {
+        "header": [],
+        "method": "GET",
+        "url": {
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "docs"
+          ],
+          "port": "{{port}}",
+          "protocol": "{{scheme}}",
+          "raw": "{{scheme}}://{{host}}:{{port}}/docs"
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Assistance Request",
+      "request": {
+        "header": [],
+        "method": "GET",
+        "url": {
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "api",
+            "assistances",
+            "{{assistance_id}}"
+          ],
+          "port": "{{port}}",
+          "protocol": "{{scheme}}",
+          "raw": "{{scheme}}://{{host}}:{{port}}/api/assistances/{{assistance_id}}"
+        }
+      },
+      "response": []
+    },
+    {
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const responseBody = pm.response.json()",
+              "pm.collectionVariables.set(\"assistance_id\", responseBody.id);"
+            ],
+            "packages": {},
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "name": "Create assistance request",
+      "request": {
+        "body": {
+          "mode": "raw",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          },
+          "raw": "{\n    \"topic\": \"sales\",\n    \"description\": \"{{$randomLoremSentence}}\"\n}"
+        },
+        "header": [],
+        "method": "POST",
+        "url": {
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "api",
+            "assistances"
+          ],
+          "port": "{{port}}",
+          "protocol": "{{scheme}}",
+          "raw": "{{scheme}}://{{host}}:{{port}}/api/assistances"
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "assistance_id",
+      "value": ""
+    }
+  ]
+}
