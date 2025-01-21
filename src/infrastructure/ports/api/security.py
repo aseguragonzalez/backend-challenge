@@ -12,7 +12,7 @@ def api_key(
     api_key_header: str = Security(api_key_header),
     settings: Settings = Depends(settings),
 ) -> None:
-    if api_key_header in settings.api_keys.split(";"):
+    if api_key_header in settings.assistance_api_keys.split(";"):
         return None
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

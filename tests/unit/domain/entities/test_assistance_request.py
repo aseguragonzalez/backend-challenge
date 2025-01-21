@@ -3,6 +3,7 @@ from uuid import UUID
 import pytest
 
 from src.domain.entities import AssistanceRequest
+from src.domain.events import AssistanceRequestCreated, AssistanceRequestFailed, AssistanceRequestSucceeded
 from src.domain.exceptions import UnavailableChangeOfStatusError
 from src.domain.value_objects import Status, Topic
 
@@ -18,6 +19,11 @@ def test_new_should_create_assistance_request_instance(faker):
     assert assistance_request.topic == topic
     assert assistance_request.description == description
     assert assistance_request.status == Status.Accepted
+    assert len(assistance_request.events) == 1
+    event = assistance_request.events[0]
+    assert isinstance(event, AssistanceRequestCreated)
+    assert event.type == "assistance_request_created"
+    assert event.payload == {"id": str(id)}
 
 
 def test_stored_should_retrieve_an_assistance_request(faker):
@@ -32,18 +38,25 @@ def test_stored_should_retrieve_an_assistance_request(faker):
     assert assistance_request.topic == topic
     assert assistance_request.description == description
     assert assistance_request.status == status
+    assert len(assistance_request.events) == 0
 
 
 def test_fail_should_mark_as_failed(faker):
-    assistance_request = AssistanceRequest.new(
+    assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
         description=faker.sentence(),
+        status=Status.Accepted,
     )
 
     assistance_request.fail()
 
     assert assistance_request.status == Status.Failed
+    assert len(assistance_request.events) == 1
+    event = assistance_request.events[0]
+    assert isinstance(event, AssistanceRequestFailed)
+    assert event.type == "assistance_request_failed"
+    assert event.payload == {"id": str(assistance_request.id)}
 
 
 def test_fail_should_raise_an_unavailable_change_of_status_error_when_status_is_invalid(faker):
@@ -59,15 +72,20 @@ def test_fail_should_raise_an_unavailable_change_of_status_error_when_status_is_
 
 
 def test_success_should_mark_as_succeeded(faker):
-    assistance_request = AssistanceRequest.new(
+    assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
         description=faker.sentence(),
+        status=Status.Accepted,
     )
 
     assistance_request.success()
 
     assert assistance_request.status == Status.Succeeded
+    event = assistance_request.events[0]
+    assert isinstance(event, AssistanceRequestSucceeded)
+    assert event.type == "assistance_request_succeeded"
+    assert event.payload == {"id": str(assistance_request.id)}
 
 
 def test_success_should_raise_an_unavailable_change_of_status_error_when_status_is_invalid(faker):

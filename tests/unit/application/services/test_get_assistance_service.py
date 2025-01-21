@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from src.application.services import GetAssistanceService
+from src.application.services import GetAssistanceRequest, GetAssistanceService
 from src.domain.entities import AssistanceRequest
 from src.domain.value_objects import Status, Topic
 
@@ -13,9 +13,10 @@ def test_execute_should_return_an_assistance_request(faker, assistances_reposito
         status=faker.random_element(elements=[Status.Accepted, Status.Succeeded, Status.Failed]),
     )
     assistances_repository.get.return_value = expected_assistance_request
+    request = GetAssistanceRequest(id=expected_assistance_request.id)
     service = GetAssistanceService(repository=assistances_repository)
 
-    assistance_request = service.execute(id=expected_assistance_request.id)
+    assistance_request = service.execute(request=request)
 
     assistances_repository.get.assert_called_once_with(id=expected_assistance_request.id)
     assert assistance_request.id == expected_assistance_request.id

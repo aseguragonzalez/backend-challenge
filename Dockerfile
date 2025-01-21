@@ -12,6 +12,6 @@ COPY . .
 
 ENV PYTHONPATH=/home/app
 
-EXPOSE 80
+EXPOSE 8000
 
 CMD ["fastapi", "run", "src/infrastructure/ports/api/main.py", "--host", "0.0.0.0", "--port", "8000"]

@@ -6,18 +6,24 @@ from httpx import Client, HTTPStatusError, Response
 from src.domain.entities import AssistanceRequest
 from src.domain.services import UnavailableChannelError
 from src.domain.value_objects import Topic
-from src.infrastructure.adapters.services import SlackChannel
+from src.infrastructure.adapters.services import SlackChannel, SlackSettings
 
 
-def test_send_should_post_http_message(faker):
+@pytest.fixture
+def settings(faker):
+    return SlackSettings(
+        url=faker.url(),
+        private_key=faker.uuid4(),
+        channel=faker.word(),
+    )
+
+
+def test_send_should_post_http_message(faker, settings):
     client = Mock(Client)
-    url = faker.url()
-    private_key = faker.uuid4()
-    channel = faker.word()
     assistance_request = AssistanceRequest.new(
         topic=faker.random_element(elements=[Topic.Pricing, Topic.Sales]), description=faker.sentence()
     )
-    slack_channel = SlackChannel(client=client, channel=channel, url=url, private_key=private_key)
+    slack_channel = SlackChannel(client=client, settings=settings)
     response = Mock(Response)
     response.status_code = 200
     response.json.return_value = {"ok": True}
@@ -26,21 +32,18 @@ def test_send_should_post_http_message(faker):
     slack_channel.send(assistance_request=assistance_request)
 
     client.post.assert_called_once_with(
-        url=f"{url}/api/chat.postMessage?channel={channel}",
+        url=f"{settings.url}/api/chat.postMessage?channel={settings.channel}",
         json={"text": assistance_request.description},
-        headers={"X-API-KEY": private_key},
+        headers={"X-API-KEY": settings.private_key},
     )
 
 
-def test_send_should_raise_unavailable_channel_error_when_client_raises_exception(faker):
+def test_send_should_raise_unavailable_channel_error_when_client_raises_exception(faker, settings):
     client = Mock(Client)
-    url = faker.url()
-    private_key = faker.uuid4()
-    channel = faker.word()
     assistance_request = AssistanceRequest.new(
         topic=faker.random_element(elements=[Topic.Pricing, Topic.Sales]), description=faker.sentence()
     )
-    slack_channel = SlackChannel(client=client, channel=channel, url=url, private_key=private_key)
+    slack_channel = SlackChannel(client=client, settings=settings)
     response = Mock(Response)
     response.status_code = faker.random_int(min=400, max=599)
     response.json.return_value = {}
