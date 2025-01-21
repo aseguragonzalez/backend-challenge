@@ -1,6 +1,6 @@
-from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.service import Service
+from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes.service_component import ServiceComponent
 
 
-class CustomService(Service):
+class CustomService(ServiceComponent):
     def execute(self) -> None:
         return None

@@ -9,7 +9,7 @@ from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes import 
     NestedService,
     ResourceClient,
     ResourceService,
-    Service,
+    ServiceComponent,
     ServiceDecorator,
     ThirdPartyService,
     ThirdPartySettings,
@@ -114,10 +114,10 @@ def test_get_service_should_fails_when_detect_circular_dependency():
 def test_get_service_should_retrieve_decorated_instance_of_abstract_component():
     sp = BasicServiceProvider()
     sp.register(CustomService, CustomService)
-    sp.register(Service, ServiceDecorator)
-    decorated_service = sp.get(Service)
+    sp.register(ServiceComponent, ServiceDecorator)
+    decorated_service = sp.get(ServiceComponent)
 
-    assert isinstance(decorated_service, Service)
+    assert isinstance(decorated_service, ServiceComponent)
     assert isinstance(decorated_service, ServiceDecorator)
     assert not isinstance(decorated_service, CustomService)
     assert isinstance(decorated_service._service, CustomService)
