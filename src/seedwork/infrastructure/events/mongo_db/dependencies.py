@@ -26,7 +26,7 @@ def mongo_db_events_db(sp: ServiceProvider) -> None:
 
         settings = sp.get(MongoDbEventsDbSettings)
         mongo_client = sp.get(MongoClient)
-        db_collection = mongo_client[settings.database_name][settings.collection_name]
+        db_collection = mongo_client[settings.database_name][settings.processed_collection_name]
         return MongoDbEventsDb(db_collection=db_collection, client_session=client_session)
 
     sp.register_singleton(EventsDb, _configure)

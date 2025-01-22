@@ -1,8 +1,10 @@
-from src.infrastructure.ports.dlq.events.assistance_failed_event import AssistanceFailedEvent
-from src.infrastructure.ports.dlq.events.assistance_failed_event_handler import AssistanceFailedEventHandler
+from src.infrastructure.ports.dlq.events.assistance_created_event import AssistanceCreatedEvent
+from src.infrastructure.ports.dlq.events.assistance_created_event_handler import AssistanceCreatedEventHandler
+from src.infrastructure.ports.dlq.events.custom_dispatcher import CustomDispatcher
 
 
 __all__ = (
-    "AssistanceFailedEvent",
-    "AssistanceFailedEventHandler",
+    "AssistanceCreatedEvent",
+    "AssistanceCreatedEventHandler",
+    "CustomDispatcher",
 )

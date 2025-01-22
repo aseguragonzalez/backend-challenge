@@ -1,3 +1,4 @@
+from logging import Logger
 from smtplib import SMTP, SMTPHeloError, SMTPNotSupportedError, SMTPRecipientsRefused, SMTPSenderRefused
 from unittest.mock import Mock
 
@@ -10,11 +11,12 @@ from src.infrastructure.adapters.services import EmailChannel
 
 
 def test_send_should_send_email(faker, email_settings):
+    logger = Mock(Logger)
     client = Mock(SMTP)
     assistance_request = AssistanceRequest.new(
         topic=faker.random_element(elements=[Topic.Pricing, Topic.Sales]), description=faker.sentence()
     )
-    channel = EmailChannel(client=client, settings=email_settings)
+    channel = EmailChannel(client=client, settings=email_settings, logger=logger)
 
     channel.send(assistance_request=assistance_request)
 
@@ -24,6 +26,7 @@ def test_send_should_send_email(faker, email_settings):
 
 
 def test_send_should_raise_unavailable_channel_error_when_client_raises_exception(faker, email_settings):
+    logger = Mock(Logger)
     client = Mock(SMTP)
     assistance_request = AssistanceRequest.new(
         topic=faker.random_element(elements=[Topic.Pricing, Topic.Sales]), description=faker.sentence()
@@ -36,7 +39,7 @@ def test_send_should_raise_unavailable_channel_error_when_client_raises_exceptio
             SMTPNotSupportedError(),
         ]
     )
-    channel = EmailChannel(client=client, settings=email_settings)
+    channel = EmailChannel(client=client, settings=email_settings, logger=logger)
 
     with pytest.raises(UnavailableChannelError):
         channel.send(assistance_request=assistance_request)

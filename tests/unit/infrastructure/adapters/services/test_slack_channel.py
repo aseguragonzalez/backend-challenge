@@ -34,7 +34,7 @@ def test_send_should_post_http_message(faker, settings):
     client.post.assert_called_once_with(
         url=f"{settings.url}/api/chat.postMessage?channel={settings.channel}",
         json={"text": assistance_request.description},
-        headers={"X-API-KEY": settings.private_key},
+        headers={"Authorization": f"Bearer {settings.private_key}"},
     )
 
 

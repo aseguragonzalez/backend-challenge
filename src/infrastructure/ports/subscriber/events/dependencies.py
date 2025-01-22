@@ -4,6 +4,10 @@ from src.infrastructure.adapters.services import EmailChannel, SlackChannel
 from src.infrastructure.ports.subscriber.events import (
     AssistanceCreatedEvent,
     AssistanceCreatedEventHandler,
+    AssistanceFailedEvent,
+    AssistanceFailedEventHandler,
+    AssistanceSucceededEvent,
+    AssistanceSucceededEventHandler,
     CustomDispatcher,
 )
 from src.seedwork.infrastructure.events import EventsDispatcher
@@ -23,12 +27,16 @@ def channel_service(sp: ServiceProvider) -> None:
 
 def event_handlers(sp: ServiceProvider) -> None:
     sp.register_singleton(AssistanceCreatedEventHandler, AssistanceCreatedEventHandler)
+    sp.register_singleton(AssistanceFailedEventHandler, AssistanceFailedEventHandler)
+    sp.register_singleton(AssistanceSucceededEventHandler, AssistanceSucceededEventHandler)
 
 
 def events_dispatcher(sp: ServiceProvider) -> None:
     def _configure(sp: ServiceProvider):
         event_handlers: dict[type, list] = {
             AssistanceCreatedEvent: [sp.get(AssistanceCreatedEventHandler)],
+            AssistanceFailedEvent: [sp.get(AssistanceFailedEventHandler)],
+            AssistanceSucceededEvent: [sp.get(AssistanceSucceededEventHandler)],
         }
         return CustomDispatcher(event_handlers=event_handlers)
 

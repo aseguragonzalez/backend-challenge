@@ -8,10 +8,10 @@ from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvid
 class App(AppBase):
     def __init__(self, logger: Logger, service_provider: ServiceProvider | None = None):
         super().__init__(service_provider=service_provider)
-        self._logger: Logger = logger
+        self._logger = logger
 
     def run(self, *args: dict[str, str], **kwargs: dict[str, str]) -> None:
-        self._logger.info("Starting app. Press Ctrl+C to end the process.")
+        self._logger.info("Starting DLQ subscriber. Press Ctrl+C to end the process.")
         with self.service_provider:
             subscriber: EventsSubscriber = self.service_provider.get(EventsSubscriber)  # type:ignore
             self._logger.info("Subscriber starts listening")
@@ -21,7 +21,7 @@ class App(AppBase):
                 self._logger.info("Clossing because of KeyboardInterrupt")
             finally:
                 self.stop()
-                self._logger.info("App closed")
+                self._logger.info("DLQ subscriber closed")
 
     def stop(self) -> None:
         self._logger.info("Stopping subscriber")

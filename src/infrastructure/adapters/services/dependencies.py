@@ -13,12 +13,12 @@ def email_channel(sp: ServiceProvider) -> None:
 
 def email_settings(sp: ServiceProvider) -> None:
     email_settings = EmailSettings(
-        from_email=os.getenv("EMAIL_CHANNEL_EMAIL_FROM"),
-        to_email=os.getenv("EMAIL_CHANNEL_EMAIL_TO"),
-        server=os.getenv("EMAIL_CHANNEL_SERVER"),
-        port=int(os.getenv("EMAIL_CHANNEL_PORT")),
-        username=os.getenv("EMAIL_CHANNEL_USERNAME"),
-        password=os.getenv("EMAIL_CHANNEL_PASSWORD"),
+        from_email=os.getenv("EMAIL_FROM"),
+        to_email=os.getenv("EMAIL_TO"),
+        server=os.getenv("EMAIL_HOST"),
+        port=int(os.getenv("EMAIL_PORT")),
+        username=os.getenv("EMAIL_USERNAME"),
+        password=os.getenv("EMAIL_PASSWORD"),
     )
     sp.register_singleton(EmailSettings, lambda _: email_settings)
 
@@ -37,9 +37,9 @@ def slack_channel(sp: ServiceProvider) -> None:
 
 def slack_settings(sp: ServiceProvider) -> None:
     slack_settings = SlackSettings(
-        channel=os.getenv("SLACK_CHANNEL_CHANNEL"),
-        url=os.getenv("SLACK_CHANNEL_URL"),
-        private_key=os.getenv("SLACK_CHANNEL_PRIVATE_KEY"),
+        channel=os.getenv("SLACK_CHANNEL_NAME"),
+        url=os.getenv("SLACK_SERVER_URL"),
+        private_key=os.getenv("SLACK_PRIVATE_KEY"),
     )
     sp.register_singleton(SlackSettings, lambda _: slack_settings)
 

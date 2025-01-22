@@ -1,14 +1,20 @@
 {
   "configurations": [
     {
+      "module": "src.infrastructure.ports.dlq.main",
+      "name": "Debug DLQ Subscriber",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
       "module": "src.infrastructure.ports.publisher.main",
-      "name": "Python Debugger: Publisher",
+      "name": "Debug Publisher",
       "request": "launch",
       "type": "debugpy"
     },
     {
       "module": "src.infrastructure.ports.subscriber.main",
-      "name": "Python Debugger: Subscriber",
+      "name": "Debug Subscriber",
       "request": "launch",
       "type": "debugpy"
     },
@@ -24,7 +30,7 @@
       ],
       "jinja": true,
       "module": "fastapi",
-      "name": "Python Debugger: FastAPI",
+      "name": "Debug FastAPI",
       "request": "launch",
       "type": "debugpy"
     }

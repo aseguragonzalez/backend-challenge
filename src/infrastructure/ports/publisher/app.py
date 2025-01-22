@@ -26,9 +26,9 @@ class App(AppBase):
                 self._logger.info("App closed")
 
     def _publish_event(self, event: Event, producer: Producer) -> None:
-        self._logger.info(f"\nSending event: {event.id} ")
+        self._logger.info(f"Sending event: {event.id} ")
         producer.send_message(event.to_bytes())
-        self._logger.info(f"\nEvent sent: {event.id} ")
+        self._logger.info(f"Event sent: {event.id} ")
 
     def stop(self) -> None:
         self._logger.info("Stopping watcher")
