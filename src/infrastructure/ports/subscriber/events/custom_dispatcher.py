@@ -1,6 +1,10 @@
 from typing import TypeVar
 
-from src.infrastructure.ports.subscriber.events import AssistanceCreatedEvent
+from src.infrastructure.ports.subscriber.events import (
+    AssistanceCreatedEvent,
+    AssistanceFailedEvent,
+    AssistanceSucceededEvent,
+)
 from src.seedwork.infrastructure.events import Event, EventHandler, EventsDispatcher
 
 
@@ -14,4 +18,8 @@ class CustomDispatcher(EventsDispatcher):
     def get_concrete_event(self, event: Event) -> Event:
         if event.type == "assistance_request_created":
             return AssistanceCreatedEvent.from_event(event=event)
+        if event.type == "assistance_request_failed":
+            return AssistanceFailedEvent.from_event(event=event)
+        if event.type == "assistance_request_succeeded":
+            return AssistanceSucceededEvent.from_event(event=event)
         return event
