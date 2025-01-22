@@ -14,7 +14,7 @@ class SlackChannel(Channel):
         response = self._client.post(
             url=f"{self._settings.url}/api/chat.postMessage?channel={self._settings.channel}",
             json={"text": assistance_request.description},
-            headers={"X-API-KEY": self._settings.private_key},
+            headers={"Authorization": f"Bearer {self._settings.private_key}"},
         )
         try:
             response.raise_for_status()

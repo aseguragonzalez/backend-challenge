@@ -46,7 +46,7 @@ def _producer_settings(sp: ServiceProvider) -> None:
     sp.register_singleton(ProducerSettings, lambda _: settings)
 
 
-def _events_watcehr(sp: ServiceProvider) -> None:
+def _events_watcher(sp: ServiceProvider) -> None:
     def _configure(sp: ServiceProvider):
         settings = sp.get(MongoDbEventsDbSettings)
         client = sp.get(MongoClient)
@@ -64,5 +64,5 @@ def configure(app: App) -> App:
     app.register(rabbit_mq_producer)
     app.register(_mongo_client)
     app.register(mongo_db_events_db)
-    app.register(_events_watcehr)
+    app.register(_events_watcher)
     return app

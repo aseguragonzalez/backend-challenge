@@ -27,6 +27,8 @@ def channel_service(sp: ServiceProvider) -> None:
 
 def event_handlers(sp: ServiceProvider) -> None:
     sp.register_singleton(AssistanceCreatedEventHandler, AssistanceCreatedEventHandler)
+    sp.register_singleton(AssistanceFailedEventHandler, AssistanceFailedEventHandler)
+    sp.register_singleton(AssistanceSucceededEventHandler, AssistanceSucceededEventHandler)
 
 
 def events_dispatcher(sp: ServiceProvider) -> None:

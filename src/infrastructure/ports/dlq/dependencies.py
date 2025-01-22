@@ -10,8 +10,8 @@ from src.infrastructure.adapters.repositories.dependencies import (
 from src.infrastructure.ports.dlq.app import App
 from src.infrastructure.ports.dlq.events.dependencies import event_handlers, events_dispatcher
 from src.seedwork.infrastructure.events.mongo_db import MongoDbEventsDbSettings
-from src.seedwork.infrastructure.events.mongo_db.dependencies import mongo_db_events_db
-from src.seedwork.infrastructure.events.queues.dependencies import queue_publisher, queue_subscriber
+from src.seedwork.infrastructure.events.mongo_db.dependencies import mongo_db_events_db, mongo_db_events_db_publisher
+from src.seedwork.infrastructure.events.queues.dependencies import queue_subscriber
 from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvider
 from src.seedwork.infrastructure.queues.rabbit_mq import ConsumerSettings, ProducerSettings, RabbitMqSettings
 from src.seedwork.infrastructure.queues.rabbit_mq.dependencies import (
@@ -34,7 +34,8 @@ def _mongo_db_events_db_settings(sp: ServiceProvider) -> None:
     settings = MongoDbEventsDbSettings(
         database_url=os.getenv("EVENTS_DATABASE_URL"),
         database_name=os.getenv("EVENTS_DATABASE_NAME"),
-        collection_name=os.getenv("PROCESSED_EVENTS_COLLECTION_NAME"),
+        collection_name=os.getenv("EVENTS_COLLECTION_NAME"),
+        processed_collection_name=os.getenv("EVENTS_DLQ_PROCESSED_COLLECTION_NAME"),
     )
     sp.register_singleton(MongoDbEventsDbSettings, lambda _: settings)
 
@@ -71,7 +72,6 @@ def configure(app: App) -> App:
     app.register(rabbit_mq_connection)
     app.register(rabbit_mq_consumer)
     app.register(rabbit_mq_producer)
-    app.register(queue_publisher)
     app.register(queue_subscriber)
     app.register(mongo_client)
     app.register(client_session)
@@ -81,5 +81,6 @@ def configure(app: App) -> App:
     app.register(unit_of_work)
     app.register(assistances_repository)
     app.register(mongo_db_assistances_repositories)
+    app.register(mongo_db_events_db_publisher)
     app.register(mongo_db_events_db)
     return app
