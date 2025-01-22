@@ -8,13 +8,12 @@ from src.seedwork.infrastructure.events import Event
 
 
 def test_new_should_create_a_new_instance(faker):
-    event_type = faker.word()
-    event_payload = faker.pydict()
-    version = faker.word()
-
     with freeze_time(datetime.now(timezone.utc)):
+        event_type = faker.word()
+        event_payload = faker.pydict()
+        version = faker.word()
         created_at = datetime.now(timezone.utc)
-        event = Event.new(type=event_type, payload=event_payload, version=version)
+        event = Event.new(type=event_type, payload=event_payload, version=version, created_at=created_at)
 
     assert event.type == event_type
     assert event.payload == event_payload
@@ -24,15 +23,12 @@ def test_new_should_create_a_new_instance(faker):
 
 
 def test_from_domain_event_should_create_event_from_domain_event(faker):
-    domain_event = CustomEvent.new(id=UUID(faker.uuid4()))
-
     with freeze_time(datetime.now(timezone.utc)):
+        domain_event = CustomEvent.new(id=UUID(faker.uuid4()))
         now = datetime.now(timezone.utc)
         event = Event.from_domain_event(domain_event)
 
     assert event.type == domain_event.type
-    assert event.payload["event_id"] == domain_event.id
-    assert event.payload["created_at"] == domain_event.created_at
     assert event.payload["id"] == domain_event.payload["id"]
     assert event.id is not None
     assert event.created_at == now

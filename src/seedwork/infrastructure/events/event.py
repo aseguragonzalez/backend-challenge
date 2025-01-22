@@ -28,10 +28,9 @@ class Event:
 
     @classmethod
     def from_domain_event(cls, event: DomainEvent) -> "Event":
-        payload = event.payload.copy()
-        payload["event_id"] = event.id
-        payload["created_at"] = event.created_at
-        return cls.new(type=event.type, payload=payload, version=event.version)
+        return cls.new(
+            type=event.type, payload=event.payload, created_at=event.created_at, id=event.id, version=event.version
+        )
 
     @classmethod
     def from_json(cls, data: str) -> "Event":
@@ -42,8 +41,15 @@ class Event:
         return cls(**json_data)
 
     @classmethod
-    def new(cls, type: str, payload: dict[str, Any], version: str = _DEFAULT_VERSION) -> "Event":
-        return cls(type=type, payload=payload, version=version)
+    def new(
+        cls,
+        payload: dict[str, Any],
+        type: str,
+        created_at: datetime = datetime.now(timezone.utc),
+        id: UUID = uuid4(),
+        version: str = _DEFAULT_VERSION,
+    ) -> "Event":
+        return cls(type=type, payload=payload, created_at=created_at, id=id, version=version)
 
     def to_bytes(self) -> bytes:
         return self.to_json().encode("utf-8")
