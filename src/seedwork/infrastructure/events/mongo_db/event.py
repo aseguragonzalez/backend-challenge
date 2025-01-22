@@ -26,6 +26,49 @@ class Event:
         }
 
     @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "Event":
+        return cls(
+            _id=data["_id"],
+            type=data["type"],
+            created_at=data["created_at"],
+            id=data["id"],
+            payload=data["payload"],
+            version=data["version"],
+        )
+
+    def to_integration_event(self) -> IntegrationEvent:
+        payload = Event._deserialize_document(data=self.payload)
+        return IntegrationEvent(
+            type=self.type,
+            created_at=datetime.fromisoformat(self.created_at),
+            id=UUID(self.id),
+            payload=payload,
+            version=self.version,
+        )
+
+    @staticmethod
+    def _deserialize_document(data: dict[str, Any]) -> dict[str, Any]:
+        for key, value in data.items():
+            if isinstance(value, str):
+                try:
+                    data[key] = datetime.fromisoformat(value)
+                except ValueError:
+                    pass
+
+            if isinstance(value, str):
+                try:
+                    data[key] = UUID(value)
+                except ValueError:
+                    pass
+
+            if isinstance(value, str) and "b'" in value:
+                data[key] = value.decode("utf-8")
+
+            if isinstance(value, dict):
+                data[key] = Event._deserialize_document(data=value)
+        return data
+
+    @classmethod
     def from_integration_event(cls, event: IntegrationEvent) -> "Event":
         payload = Event._serialize_document(data=event.payload)
         return cls(

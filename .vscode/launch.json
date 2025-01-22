@@ -1,6 +1,12 @@
 {
   "configurations": [
     {
+      "module": "src.infrastructure.ports.publisher.main",
+      "name": "Python Debugger: Publisher",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
       "module": "src.infrastructure.ports.subscriber.main",
       "name": "Python Debugger: Subscriber",
       "request": "launch",
