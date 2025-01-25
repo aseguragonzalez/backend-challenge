@@ -6,8 +6,8 @@ from src.seedwork.infrastructure.queues.rabbit_mq.producer_settings import Produ
 
 class RabbitMqProducer(Producer):
     def __init__(self, connection: BlockingConnection, settings: ProducerSettings) -> None:
-        self._settings = settings
         self._channel = connection.channel()
+        self._settings = settings
 
     def __enter__(self) -> "RabbitMqProducer":
         return self
@@ -17,9 +17,6 @@ class RabbitMqProducer(Producer):
             self._channel.close()
 
     def send_message(self, body: bytes) -> None:
-        if self._channel.is_closed:
-            raise RuntimeError("The channel is closed.")
-
         self._channel.basic_publish(
             exchange=self._settings.exchange,
             routing_key=self._settings.routing_key,
