@@ -15,6 +15,7 @@ if __name__ == "__main__":
     max_retries = 3
     while should_run and max_retries > 0:
         app = configure(App(logger=logger))
+        app.register(lambda sp: sp.register_singleton(logging.Logger, lambda _: logger))
         logger.info("Starting DLQ subscriber")
         try:
             app.run()
