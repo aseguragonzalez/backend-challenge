@@ -16,6 +16,7 @@ if __name__ == "__main__":
     while should_run and max_retries > 0:
         app = configure(App(logger=logger))
         app.register(lambda sp: sp.register_singleton(logging.Logger, lambda _: logger))
+        logger.info("Starting subscriber")
         try:
             app.run()
         except KeyboardInterrupt:
