@@ -13,26 +13,18 @@ class App(AppBase):
         self._logger = logger
 
     def run(self, *args: dict[str, str], **kwargs: dict[str, str]) -> None:
-        self._logger.info("Starting app. Press Ctrl+C to end the process.")
         with self.service_provider:
             watcher: MongoDbEventsWatcher = self.service_provider.get(MongoDbEventsWatcher)
             producer: Producer = self.service_provider.get(Producer)  # type: ignore
-            try:
-                watcher.watch(lambda event: self._publish_event(event=event, producer=producer))
-            except KeyboardInterrupt:
-                self._logger.info("Clossing because of KeyboardInterrupt")
-            finally:
-                self.stop()
-                self._logger.info("App closed")
+            watcher.watch(lambda event: self._publish_event(event=event, producer=producer))
 
     def _publish_event(self, event: Event, producer: Producer) -> None:
-        self._logger.info(f"Sending event: {event.id} ")
+        self._logger.info(f"Sending event: {event.id}")
         producer.send_message(event.to_bytes())
-        self._logger.info(f"Event sent: {event.id} ")
+        self._logger.info(f"Event sent: {event.id}")
 
     def stop(self) -> None:
+        watcher: MongoDbEventsWatcher = self.service_provider.get(MongoDbEventsWatcher)
         self._logger.info("Stopping watcher")
-        subscriber: MongoDbEventsWatcher = self.service_provider.get(MongoDbEventsWatcher)
-        self._logger.info("Watcher stops listening")
-        subscriber.close()
-        self._logger.info("Watcher is stopped")
+        watcher.close()
+        self._logger.info("Watcher stopped")
