@@ -25,6 +25,16 @@ class BasicServiceProvider(ServiceProvider):
         self._stack = LifoQueue()
 
     def __enter__(self) -> "BasicServiceProvider":
+        if not self._stack.empty():
+            return self
+
+        for service_type in self._context_handled_singleton_types:
+            if service_type not in self._instances:
+                continue
+            instance = self._instances[service_type]
+            instance.__enter__()
+            self._stack.put(instance)
+
         return self
 
     def __exit__(self, exc_type: type, exc_val: Exception, exc_tb: object) -> None:
