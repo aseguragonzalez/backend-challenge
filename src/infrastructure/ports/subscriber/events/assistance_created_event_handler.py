@@ -18,7 +18,7 @@ class AssistanceCreatedEventHandler(EventHandler[AssistanceCreatedEvent]):
         try:
             self._send_assistance_service.execute(request=request)
         except UnavailableChannelError as exc:
-            self._logger.error(f"Channel is not available for: {exc}")
+            self._logger.error(f"{exc}")
             raise RecoverableError(message=f"Channel is not available for assistance {event.assistance_id}")
         finally:
             self._logger.info(f"Handled assistance created event {event.assistance_id}")

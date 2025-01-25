@@ -23,7 +23,7 @@ class EmailChannel(Channel):
 
     def send(self, assistance_request: AssistanceRequest) -> None:
         try:
-            self._client.connect()
+            self._client.connect(host=self._settings.server, port=self._settings.port)
         except ConnectionRefusedError as exc:
             self._logger.error(f"We can't connect with SMTP Server: {exc}")
             raise UnavailableChannelError()
