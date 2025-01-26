@@ -1,4 +1,5 @@
 import os
+from logging import Logger
 
 from src.application.dependencies import fail_assistance_service
 from src.infrastructure.adapters.dependencies import client_session, mongo_client, unit_of_work
@@ -63,7 +64,7 @@ def _producer_settings(sp: ServiceProvider) -> None:
     sp.register_singleton(ProducerSettings, lambda _: settings)
 
 
-def configure(app: App) -> App:
+def configure(app: App, logger: Logger) -> App:
     app.register(_rabbit_mq_settings)
     app.register(_consumer_settings)
     app.register(_producer_settings)
@@ -83,4 +84,5 @@ def configure(app: App) -> App:
     app.register(mongo_db_assistances_repositories)
     app.register(mongo_db_events_db_publisher)
     app.register(mongo_db_events_db)
+    app.register(lambda sp: sp.register_singleton(Logger, lambda _: logger))
     return app

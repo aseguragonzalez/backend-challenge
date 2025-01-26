@@ -4,6 +4,8 @@ WORKDIR /home/wiremock
 
 COPY . .
 
+RUN chmod +x /home/wiremock/healthcheck.sh
+
 EXPOSE 8080
 EXPOSE 8443
 

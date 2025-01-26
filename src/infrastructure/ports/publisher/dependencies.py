@@ -1,4 +1,5 @@
 import os
+from logging import Logger
 
 from pymongo import MongoClient
 
@@ -56,7 +57,7 @@ def _events_watcher(sp: ServiceProvider) -> None:
     sp.register_singleton(MongoDbEventsWatcher, _configure)
 
 
-def configure(app: App) -> App:
+def configure(app: App, logger: Logger) -> App:
     app.register(_rabbit_mq_settings)
     app.register(_producer_settings)
     app.register(_mongo_db_events_db_settings)
@@ -65,4 +66,5 @@ def configure(app: App) -> App:
     app.register(_mongo_client)
     app.register(mongo_db_events_db)
     app.register(_events_watcher)
+    app.register(lambda sp: sp.register_singleton(Logger, lambda _: logger))
     return app
