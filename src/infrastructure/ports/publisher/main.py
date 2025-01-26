@@ -1,33 +1,20 @@
 import logging
-
-from pika.exceptions import AMQPConnectionError
+import os
 
 from src.infrastructure.ports.publisher.app import App
 from src.infrastructure.ports.publisher.dependencies import configure
+from src.seedwork.infrastructure.ports.component import Component
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger("PUBLISHER")
-    logger.info("Starting publisher. Press Ctrl+C to end the process.")
-
-    should_run = True
-    max_retries = 3
-    while should_run and max_retries > 0:
-        app = configure(App(logger=logger))
-        logger.info("Starting watcher events insertion")
-        try:
-            app.run()
-        except KeyboardInterrupt:
-            logger.info("Stoping watcher events insertion")
-            should_run = False
-        except AMQPConnectionError as exc:
-            logger.error(f"We have to restart the publisher app. AMQPConnectionError: {exc}")
-            max_retries -= 1
-        finally:
-            app.stop()
-
-    if max_retries == 0:
-        logger.error("We have reached the maximum retries. The publisher will stop.")
-
-    logger.info("Publisher stopped")
+    logger.info("Starting publisher component. Press Ctrl+C to end the process.")
+    component = Component(
+        logger=logger,
+        app_name="Subscriber",
+        max_retries=int(os.getenv("SETTINGS_MAX_RETRIES")),
+        minutes_between_errors=int(os.getenv("SETTINGS_MINUTES_BETWEEN_ERRORS")),
+        seconds_between_retries=int(os.getenv("SETTINGS_SECONDS_BETWEEN_RETRIES")),
+    )
+    component.execute(lambda: configure(app=App(logger=logger), logger=logger))
