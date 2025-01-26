@@ -6,66 +6,14 @@ services:
       dockerfile: Dockerfile
     container_name: api
     depends_on:
-    - db
-    - db-init
-    - rabbitmq
+      db-init:
+        condition: service_completed_successfully
     env_file:
     - .env
     networks:
     - default
     ports:
     - 8000:8000
-    volumes:
-    - .:/home/app
-
-  dlq:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: dlq
-    command: python src/infrastructure/ports/dlq/main.py
-    depends_on:
-    - db
-    - db-init
-    - rabbitmq
-    env_file:
-    - .env
-    networks:
-    - default
-    volumes:
-    - .:/home/app
-
-  publisher:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: publisher
-    command: python src/infrastructure/ports/publisher/main.py
-    depends_on:
-    - db
-    - db-init
-    - rabbitmq
-    env_file:
-    - .env
-    networks:
-    - default
-    volumes:
-    - .:/home/app
-
-  subscriber:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: subscriber
-    command: python src/infrastructure/ports/subscriber/main.py
-    depends_on:
-    - db
-    - db-init
-    - rabbitmq
-    env_file:
-    - .env
-    networks:
-    - default
     volumes:
     - .:/home/app
 
@@ -87,17 +35,86 @@ services:
       dockerfile: ./Dockerfile
     container_name: db-init
     depends_on:
-    - db
+      db:
+        condition: service_started
     env_file:
     - ./deploy/mongodb-init/.env
     networks:
     - default
+
+  dlq:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dlq
+    command: python src/infrastructure/ports/dlq/main.py
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    env_file:
+    - .env
+    networks:
+    - default
+    volumes:
+    - .:/home/app
+
+  publisher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: publisher
+    command: python src/infrastructure/ports/publisher/main.py
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    env_file:
+    - .env
+    networks:
+    - default
+    volumes:
+    - .:/home/app
+
+  subscriber:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: subscriber
+    command: python src/infrastructure/ports/subscriber/main.py
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+      slack:
+        condition: service_healthy
+        restart: true
+      smtp:
+        condition: service_healthy
+        restart: true
+    env_file:
+    - .env
+    networks:
+    - default
+    volumes:
+    - .:/home/app
 
   rabbitmq:
     build:
       context: ./deploy/rabbitmq/
       dockerfile: ./Dockerfile
     container_name: rabbitmq
+    healthcheck:
+      test: [CMD, /etc/rabbitmq/healthcheck.sh]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
     - default
     ports:
@@ -109,6 +126,11 @@ services:
     build:
       context: ./deploy/slack/
       dockerfile: ./Dockerfile
+    healthcheck:
+      test: [CMD-SHELL, /home/wiremock/healthcheck.sh]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
     - default
     ports:
@@ -116,10 +138,17 @@ services:
     - 8443:8443
 
   smtp:
-    image: rnwood/smtp4dev
+    build:
+      context: ./deploy/smtp/
+      dockerfile: ./Dockerfile
     container_name: smtp
     env_file:
     - ./deploy/smtp/.env
+    healthcheck:
+      test: [CMD-SHELL, /home/smtp4dev/healthcheck.sh]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
     - default
     ports:

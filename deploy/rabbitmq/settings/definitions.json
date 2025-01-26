@@ -47,20 +47,6 @@
     {
       "configure": ".*",
       "read": ".*",
-      "user": "producer",
-      "vhost": "/",
-      "write": ".*"
-    },
-    {
-      "configure": ".*",
-      "read": ".*",
-      "user": "consumer",
-      "vhost": "/",
-      "write": ".*"
-    },
-    {
-      "configure": ".*",
-      "read": ".*",
       "user": "guest",
       "vhost": "/",
       "write": ".*"
@@ -93,32 +79,8 @@
   ],
   "rabbit_version": "3.12.0",
   "rabbitmq_version": "3.12.0",
-  "topic_permissions": [
-    {
-      "exchange": "events",
-      "read": "events",
-      "user": "consumer",
-      "vhost": "/",
-      "write": ""
-    },
-    {
-      "exchange": "events",
-      "read": ".*",
-      "user": "producer",
-      "vhost": "/",
-      "write": ".*"
-    }
-  ],
+  "topic_permissions": [],
   "users": [
-    {
-      "hashing_algorithm": "rabbit_password_hashing_sha256",
-      "limits": {},
-      "name": "consumer",
-      "password_hash": "naHlGmSfrH357F1BX3T0qZ+ifV61JpB7VHCPAoEGdp+oxpzj",
-      "tags": [
-        "consumer"
-      ]
-    },
     {
       "hashing_algorithm": "rabbit_password_hashing_sha256",
       "limits": {},
@@ -126,15 +88,6 @@
       "password_hash": "wiLx6gwDkgCwFuYcPP/2eH4i1KMr20m7bQbPV6RafUqTTThT",
       "tags": [
         "administrator"
-      ]
-    },
-    {
-      "hashing_algorithm": "rabbit_password_hashing_sha256",
-      "limits": {},
-      "name": "producer",
-      "password_hash": "LxagE6KZeFow/77/b8zAhwFbqRuD/u4KhHTX2QLGwP0rVFrk",
-      "tags": [
-        "producer"
       ]
     }
   ],
