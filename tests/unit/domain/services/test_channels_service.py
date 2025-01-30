@@ -8,6 +8,7 @@ from src.domain.services import Channel, ChannelNotFoundError, ChannelsService
 from src.domain.value_objects import Status, Topic
 
 
+@pytest.mark.unit
 def test_send_assistance_request_should_be_succeeded(faker):
     sales_channel = Mock(Channel)
     sales_channel.send.return_value = None
@@ -32,6 +33,7 @@ def test_send_assistance_request_should_be_succeeded(faker):
     pricing_channel.send.assert_not_called()
 
 
+@pytest.mark.unit
 def test_send_assistance_request_should_fail_when_channel_not_found_error(faker):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),

@@ -1,11 +1,13 @@
 import json
 
+import pytest
 from fastapi import status
 
 from src.infrastructure.ports.api.routes.endpoints import create_request
 from src.infrastructure.ports.api.routes.requests import CreateNewAssistanceRequest
 
 
+@pytest.mark.unit
 def test_create_request_should_return_an_created_request_response(faker, create_assistance_service):
     request = CreateNewAssistanceRequest(
         topic=faker.random_element(elements=("sales", "pricing")), description=faker.sentence()

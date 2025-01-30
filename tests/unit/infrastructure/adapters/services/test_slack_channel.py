@@ -18,6 +18,7 @@ def settings(faker):
     )
 
 
+@pytest.mark.unit
 def test_send_should_post_http_message(faker, settings):
     client = Mock(Client)
     assistance_request = AssistanceRequest.new(
@@ -38,6 +39,7 @@ def test_send_should_post_http_message(faker, settings):
     )
 
 
+@pytest.mark.unit
 def test_send_should_raise_unavailable_channel_error_when_client_raises_exception(faker, settings):
     client = Mock(Client)
     assistance_request = AssistanceRequest.new(

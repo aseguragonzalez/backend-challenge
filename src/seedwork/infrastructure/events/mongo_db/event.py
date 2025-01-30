@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from decimal import Decimal, InvalidOperation
 from typing import Any
 from uuid import UUID
 
@@ -61,6 +62,12 @@ class Event:
                 except ValueError:
                     pass
 
+            if isinstance(value, str):
+                try:
+                    data[key] = Decimal(value)
+                except (InvalidOperation, TypeError, ValueError):
+                    pass
+
             if isinstance(value, str) and "b'" in value:
                 data[key] = value.decode("utf-8")
 
@@ -87,6 +94,8 @@ class Event:
                 data[key] = value.isoformat()
             elif isinstance(value, UUID):
                 data[key] = str(value)
+            elif isinstance(value, Decimal):
+                data[key] = value.to_eng_string()
             elif isinstance(value, dict):
                 data[key] = Event._serialize_document(data=value)
             else:

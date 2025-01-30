@@ -1,6 +1,7 @@
 import json
 from uuid import UUID
 
+import pytest
 from fastapi import status
 
 from src.domain.entities import AssistanceRequest
@@ -8,6 +9,7 @@ from src.domain.value_objects import Status, Topic
 from src.infrastructure.ports.api.routes.endpoints import retrieve_request
 
 
+@pytest.mark.unit
 def test_retrieve_request_should_return_an_assistance_request_response(faker, get_assistance_service):
     assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),

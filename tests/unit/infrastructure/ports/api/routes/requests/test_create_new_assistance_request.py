@@ -4,6 +4,7 @@ from pydantic_core._pydantic_core import ValidationError
 from src.infrastructure.ports.api.routes.requests.create_new_assistance_request import CreateNewAssistanceRequest
 
 
+@pytest.mark.unit
 def test_create_new_assistance_request_should_create_instance(faker):
     topic = faker.random_element(elements=["sales", "pricing"])
     description = faker.sentence()
@@ -14,6 +15,7 @@ def test_create_new_assistance_request_should_create_instance(faker):
     assert request.description == description
 
 
+@pytest.mark.unit
 @pytest.mark.parametrize(
     "topic, description",
     [

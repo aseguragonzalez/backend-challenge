@@ -1,6 +1,9 @@
+import pytest
+
 from src.seedwork.infrastructure.queues.rabbit_mq import ProducerSettings, RabbitMqProducer
 
 
+@pytest.mark.integration
 def test_send_message_should_publish_messages(faker, rabbitmq_connection):
     exchange = faker.word()
     queue = faker.word()

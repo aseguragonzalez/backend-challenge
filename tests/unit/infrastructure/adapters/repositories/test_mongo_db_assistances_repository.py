@@ -8,6 +8,7 @@ from src.domain.value_objects import Status, Topic
 from src.infrastructure.adapters.repositories import MongoDbAssistancesRepository
 
 
+@pytest.mark.unit
 def test_save_should_store_an_assistant(faker, db_collection):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
@@ -26,6 +27,7 @@ def test_save_should_store_an_assistant(faker, db_collection):
     assert expected_assistance_request["status"] == assistance_request.status.value
 
 
+@pytest.mark.unit
 def test_save_should_update_an_assistance_request(faker, db_collection):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
@@ -52,6 +54,7 @@ def test_save_should_update_an_assistance_request(faker, db_collection):
     assert expected_assistance_request["status"] == assistance_request.status.value
 
 
+@pytest.mark.unit
 def test_get_should_return_an_assistance_request(faker, db_collection):
     expected_assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
@@ -77,6 +80,7 @@ def test_get_should_return_an_assistance_request(faker, db_collection):
     assert assistance_request.topic == expected_assistance_request.topic
 
 
+@pytest.mark.unit
 def test_get_should_raises_assistance_request_not_found_when_assistance_does_not_exist(faker, db_collection):
     repository = MongoDbAssistancesRepository(db_collection=db_collection)
 

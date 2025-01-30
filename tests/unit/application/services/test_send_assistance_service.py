@@ -5,6 +5,7 @@ from src.domain.entities import AssistanceRequest
 from src.domain.value_objects import Topic
 
 
+@pytest.mark.unit
 def test_execute_should_send_assistance_request(faker, assistances_repository, channels_service):
     assistance_request = AssistanceRequest.new(
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),
@@ -22,6 +23,7 @@ def test_execute_should_send_assistance_request(faker, assistances_repository, c
     channels_service.send_assistance_request.assert_called_once_with(assistance_request=assistance_request)
 
 
+@pytest.mark.unit
 def test_execute_should_raise_error_when_execution_fails(faker, assistances_repository, channels_service):
     assistance_request = AssistanceRequest.new(
         topic=faker.random_element(elements=[Topic.Sales, Topic.Pricing]),

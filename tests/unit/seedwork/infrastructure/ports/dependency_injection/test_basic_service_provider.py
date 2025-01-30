@@ -18,6 +18,7 @@ from tests.unit.seedwork.infrastructure.ports.dependency_injection.fakes import 
 from src.seedwork.infrastructure.ports.dependency_injection import BasicServiceProvider, ServiceProvider
 
 
+@pytest.mark.unit
 def test_get_service_should_resolve_concrete_component():
     service_provider = BasicServiceProvider()
     service_provider.register(AbstractService, ConcreteService)
@@ -30,6 +31,7 @@ def test_get_service_should_resolve_concrete_component():
     assert concrete_service.id() is not None
 
 
+@pytest.mark.unit
 def test_get_service_should_retrieve_new_instance_of_type_rule():
     service_provider = BasicServiceProvider()
     service_provider.register(ConcreteService, ConcreteService)
@@ -42,6 +44,7 @@ def test_get_service_should_retrieve_new_instance_of_type_rule():
     assert first_service != second_service
 
 
+@pytest.mark.unit
 def test_get_service_should_retrieve_new_instance_of_type_rule_function():
     service_provider = BasicServiceProvider()
     service_provider.register(ConcreteService, lambda service_provider: ConcreteService())
@@ -54,6 +57,7 @@ def test_get_service_should_retrieve_new_instance_of_type_rule_function():
     assert first_service != second_service
 
 
+@pytest.mark.unit
 def test_get_service_should_retrieve_singleton_of_type_rule():
     service_provider = BasicServiceProvider()
     service_provider.register_singleton(ConcreteService, ConcreteService)
@@ -66,6 +70,7 @@ def test_get_service_should_retrieve_singleton_of_type_rule():
     assert second_service == first_service
 
 
+@pytest.mark.unit
 def test_get_service_should_retrive_singleton_of_concrete_component():
     service_provider = BasicServiceProvider()
     service_provider.register_singleton(AbstractService, ConcreteService)
@@ -78,6 +83,7 @@ def test_get_service_should_retrive_singleton_of_concrete_component():
     assert concrete_service_a.id() == concrete_service_b.id()
 
 
+@pytest.mark.unit
 def test_get_service_should_retrive_new_instance_of_nested_service():
     def third_party_settings(sp: ServiceProvider) -> ThirdPartySettings:
         environment_variables = sp.get(EnvironmentVariables)
@@ -101,6 +107,7 @@ def test_get_service_should_retrive_new_instance_of_nested_service():
     assert isinstance(nested_service.external_service, ExternalService)
 
 
+@pytest.mark.unit
 def test_get_service_should_fails_when_detect_circular_dependency():
     service_provider = BasicServiceProvider()
     service_provider.register(CircularDependency, CircularDependency)
@@ -111,6 +118,7 @@ def test_get_service_should_fails_when_detect_circular_dependency():
     assert f"Max recursion level reached reaching: {CircularDependency}" in str(exc_info.value)
 
 
+@pytest.mark.unit
 def test_get_service_should_retrieve_decorated_instance_of_abstract_component():
     sp = BasicServiceProvider()
     sp.register(CustomService, CustomService)
@@ -124,6 +132,7 @@ def test_get_service_should_retrieve_decorated_instance_of_abstract_component():
     assert decorated_service.execute() is None
 
 
+@pytest.mark.unit
 def test_get_service_should_retrieve_a_context_managed_singleton():
     client = None
     with BasicServiceProvider() as sp:

@@ -11,7 +11,7 @@ from src.seedwork.infrastructure.events.exceptions import DecodingError, Encodin
 
 @dataclass(frozen=True)
 class Event:
-    _DEFAULT_VERSION = "1.0"
+    _DEFAULT_VERSION = "v1.0"
     type: str
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     id: UUID = field(default_factory=uuid4)

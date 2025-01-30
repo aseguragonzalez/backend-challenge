@@ -6,6 +6,7 @@ from src.seedwork.infrastructure.events.queues import QueueSubscriber
 from src.seedwork.infrastructure.queues.exceptions import UnrecoverableError
 
 
+@pytest.mark.unit
 def test_start_listening_should_handle_events_when_consumer_receives_messages(
     faker, events_dispatcher_mock, events_db_mock, unit_of_work_mock
 ):
@@ -28,6 +29,7 @@ def test_start_listening_should_handle_events_when_consumer_receives_messages(
     unit_of_work_mock.__exit__.assert_called_once()
 
 
+@pytest.mark.unit
 def test_start_listening_should_raise_unrecoverable_error_when_consumer_receives_invalid_message(
     faker, events_dispatcher_mock, events_db_mock, unit_of_work_mock
 ):
@@ -50,6 +52,7 @@ def test_start_listening_should_raise_unrecoverable_error_when_consumer_receives
     unit_of_work_mock.__exit__.assert_not_called()
 
 
+@pytest.mark.unit
 def test_start_listening_should_do_nothing_when_event_was_processed_before(
     faker, events_dispatcher_mock, events_db_mock, unit_of_work_mock
 ):

@@ -1,10 +1,12 @@
 from unittest.mock import Mock
 
+import pytest
 from tests.unit.seedwork.infrastructure.events.fakes import ConcreteEvent, CustomDispatcher
 
 from src.seedwork.infrastructure.events import Event, EventHandler
 
 
+@pytest.mark.unit
 def test_dispatch_should_handle_event(faker):
     event = Event.new(type="concrete_event", payload={"id": str(faker.uuid4())})
     concrete_event = ConcreteEvent.from_event(event=event)
@@ -20,6 +22,7 @@ def test_dispatch_should_handle_event(faker):
     handler_2.handle.assert_called_once_with(event=concrete_event)
 
 
+@pytest.mark.unit
 def test_dispatch_should_ignore_event_when_it_is_not_mapped(faker):
     event = Event.new(type="concrete_event", payload={"id": str(faker.uuid4())})
     handler_1 = Mock(EventHandler)

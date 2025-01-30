@@ -9,6 +9,7 @@ from src.infrastructure.ports.dlq.events import AssistanceCreatedEvent, Assistan
 from src.seedwork.infrastructure.queues.exceptions import UnrecoverableError
 
 
+@pytest.mark.unit
 def test_assistance_event_handler(faker):
     logger = Mock(Logger)
     event = AssistanceCreatedEvent(payload={"id": faker.uuid4()})
@@ -21,6 +22,7 @@ def test_assistance_event_handler(faker):
     service.execute.assert_called_once()
 
 
+@pytest.mark.unit
 def test_assistance_created_event_handler_with_unrecoverable_error(faker):
     event = AssistanceCreatedEvent(payload={"id": faker.uuid4()})
     service = Mock(FailAssistanceService)

@@ -1,10 +1,13 @@
 from uuid import UUID
 
+import pytest
+
 from src.application.services import GetAssistanceRequest, GetAssistanceService
 from src.domain.entities import AssistanceRequest
 from src.domain.value_objects import Status, Topic
 
 
+@pytest.mark.unit
 def test_execute_should_return_an_assistance_request(faker, assistances_repository):
     expected_assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),

@@ -1,10 +1,13 @@
 from unittest.mock import Mock
 
+import pytest
+
 from src.seedwork.infrastructure.events import Event
 from src.seedwork.infrastructure.events.queues import QueuePublisher
 from src.seedwork.infrastructure.queues import Producer
 
 
+@pytest.mark.unit
 def test_publish_should_send_an_integration_event(faker):
     event = Event.new(type=faker.word(), payload=faker.pydict())
     producer = Mock(spec=Producer)

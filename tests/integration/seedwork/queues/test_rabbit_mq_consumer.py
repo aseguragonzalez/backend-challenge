@@ -1,6 +1,9 @@
+import pytest
+
 from src.seedwork.infrastructure.queues.rabbit_mq import ConsumerSettings, RabbitMqConsumer
 
 
+@pytest.mark.integration
 def test_start_should_retrieves_messages_until_cancel(faker, rabbitmq_connection):
     exchange = faker.word()
     queue = faker.word()
