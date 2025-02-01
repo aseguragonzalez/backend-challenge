@@ -1,8 +1,10 @@
 from unittest.mock import Mock
 
+import pytest
 from tests.unit.seedwork.infrastructure.ports.fakes import FakeApp, FakeService, FakeSettings
 
 
+@pytest.mark.unit
 def test_fake_app_should_allow_set_and_get_dependencies(faker):
     settings = FakeSettings(service_host=faker.word(), service_port=faker.pyint(), api_key=faker.word())
     fake_app = FakeApp()
@@ -15,6 +17,7 @@ def test_fake_app_should_allow_set_and_get_dependencies(faker):
     assert fake_settings.api_key == settings.api_key
 
 
+@pytest.mark.unit
 def test_service_executes_on_main_run():
     mock_service = Mock(FakeService)
     fake_app = FakeApp()

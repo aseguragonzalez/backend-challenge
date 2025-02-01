@@ -1,10 +1,13 @@
 from datetime import datetime, timezone
 from uuid import UUID
 
+import pytest
+
 from src.seedwork.infrastructure.events import Event
 from src.seedwork.infrastructure.events.mongo_db import Event as EventDto
 
 
+@pytest.mark.unit
 def test_to_dict(faker):
     event = EventDto(
         _id=str(faker.uuid4()),
@@ -27,6 +30,7 @@ def test_to_dict(faker):
     }
 
 
+@pytest.mark.unit
 def test_from_dict(faker):
     event_dict = {
         "_id": str(faker.uuid4()),
@@ -47,6 +51,7 @@ def test_from_dict(faker):
     assert event.version == event_dict["version"]
 
 
+@pytest.mark.unit
 def test_from_integration_event(faker):
     event = Event(
         type="event_type",
@@ -66,6 +71,7 @@ def test_from_integration_event(faker):
     assert event_dto.version == event.version
 
 
+@pytest.mark.unit
 def test_to_integration_event(faker):
     event_dto = EventDto(
         _id=str(faker.uuid4()),

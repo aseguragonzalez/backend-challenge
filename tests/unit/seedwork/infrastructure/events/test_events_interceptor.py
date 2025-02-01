@@ -1,11 +1,14 @@
 from unittest.mock import Mock
 from uuid import UUID
 
+import pytest
+
 from src.seedwork.domain.entities import AggregateRoot
 from src.seedwork.domain.repositories.repository import Repository
 from src.seedwork.infrastructure.events import EventsInterceptor, EventsPublisher
 
 
+@pytest.mark.unit
 def test_get_should_call_repository_get_method(faker):
     events_publisher = Mock(EventsPublisher)
     aggregate_root = Mock(AggregateRoot)
@@ -20,6 +23,7 @@ def test_get_should_call_repository_get_method(faker):
     assert aggregate_root_founded == aggregate_root
 
 
+@pytest.mark.unit
 def test_get_should_call_repository_save_and_publish_events():
     events_publisher = Mock(EventsPublisher)
     aggregate_root = Mock(AggregateRoot)

@@ -1,16 +1,15 @@
-from collections.abc import Generator
-from typing import Any
 from unittest.mock import Mock
-from uuid import uuid4
 
 import pytest
-from pymongo import MongoClient
-from pymongo.collection import Collection
+from mongomock import MongoClient
+from mongomock.collection import Collection
 
 from src.application.services import CreateAssistanceService, GetAssistanceService
 from src.domain.repositories import AssistancesRepository
 from src.domain.services import ChannelsService
 from src.infrastructure.adapters.repositories import MongoDbSettings
+from src.infrastructure.adapters.services import EmailSettings
+from src.seedwork.domain import UnitOfWork
 from src.seedwork.infrastructure.events import EventsDb, EventsDispatcher
 from src.seedwork.infrastructure.events.mongo_db import MongoDbEventsDbSettings
 
@@ -50,14 +49,17 @@ def events_dispatcher_mock() -> EventsDispatcher:
     return events_dispatcher
 
 
-@pytest.fixture(scope="session")
-def mongo_db_settings(mongodb_container) -> MongoDbSettings:
-    mongo_db_url = mongodb_container.get_connection_url()
-    database_name = f"assistance_db_{str(uuid4())}"
+@pytest.fixture
+def mongo_client() -> MongoClient:
+    return MongoClient()
+
+
+@pytest.fixture
+def mongo_db_settings(faker) -> MongoDbSettings:
     return MongoDbSettings(
-        collection_name="assistances",
-        database_name=database_name,
-        database_url=mongo_db_url,
+        collection_name=faker.uuid4(),
+        database_name=faker.uuid4(),
+        database_url=faker.uuid4(),
     )
 
 
@@ -66,14 +68,12 @@ def db_collection(mongo_db_settings: MongoDbSettings, mongo_client: MongoClient)
     return mongo_client[mongo_db_settings.database_name][mongo_db_settings.collection_name]
 
 
-@pytest.fixture(scope="session")
-def events_db_settings(mongodb_container) -> MongoDbEventsDbSettings:
-    mongo_db_url = mongodb_container.get_connection_url()
-    database_name = f"events_db_{str(uuid4())}"
+@pytest.fixture
+def events_db_settings(faker) -> MongoDbEventsDbSettings:
     return MongoDbEventsDbSettings(
-        collection_name="events",
-        database_name=database_name,
-        database_url=mongo_db_url,
+        collection_name=faker.uuid4(),
+        database_name=faker.uuid4(),
+        database_url=faker.uuid4(),
     )
 
 
@@ -83,11 +83,23 @@ def db_events_collection(events_db_settings: MongoDbEventsDbSettings, mongo_clie
 
 
 @pytest.fixture
-def clean_db(
-    mongo_db_settings: MongoDbSettings, events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient
-) -> Generator[Any, Any, Any]:
-    mongo_client.drop_database(mongo_db_settings.database_name)
-    mongo_client.drop_database(events_db_settings.database_name)
-    yield
-    mongo_client.drop_database(mongo_db_settings.database_name)
-    mongo_client.drop_database(events_db_settings.database_name)
+def email_settings(faker):
+    return EmailSettings(
+        from_email=faker.email(),
+        to_email=faker.email(),
+        server="smtp",
+        port=25,
+        username=faker.user_name(),
+        password=faker.password(),
+    )
+
+
+@pytest.fixture
+def unit_of_work_mock():
+    # HACK: We have to mock uow beacuse MongoDb transactions are not available without a replica set
+    unit_of_work = Mock(UnitOfWork)
+    unit_of_work.__enter__ = Mock(return_value=unit_of_work)
+    unit_of_work.__exit__ = Mock(return_value=None)
+    unit_of_work.commit = Mock()
+    unit_of_work.rollback = Mock()
+    return unit_of_work

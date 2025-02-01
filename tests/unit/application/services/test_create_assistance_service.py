@@ -1,10 +1,13 @@
 from uuid import UUID
 
+import pytest
+
 from src.application.services import CreateAssistanceRequest, CreateAssistanceService
 from src.domain.entities import AssistanceRequest
 from src.domain.value_objects import Topic
 
 
+@pytest.mark.unit
 def test_execute_should_be_ok(faker, assistances_repository):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),

@@ -8,6 +8,7 @@ from src.domain.exceptions import UnavailableChangeOfStatusError
 from src.domain.value_objects import Status, Topic
 
 
+@pytest.mark.unit
 def test_new_should_create_assistance_request_instance(faker):
     id = UUID(faker.uuid4())
     topic = faker.random_element(elements=[Topic.Sales, Topic.Pricing])
@@ -26,6 +27,7 @@ def test_new_should_create_assistance_request_instance(faker):
     assert event.payload == {"id": str(id)}
 
 
+@pytest.mark.unit
 def test_stored_should_retrieve_an_assistance_request(faker):
     id = UUID(faker.uuid4())
     topic = faker.random_element(elements=[Topic.Sales, Topic.Pricing])
@@ -41,6 +43,7 @@ def test_stored_should_retrieve_an_assistance_request(faker):
     assert len(assistance_request.events) == 0
 
 
+@pytest.mark.unit
 def test_fail_should_mark_as_failed(faker):
     assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
@@ -59,6 +62,7 @@ def test_fail_should_mark_as_failed(faker):
     assert event.payload == {"id": str(assistance_request.id)}
 
 
+@pytest.mark.unit
 def test_fail_should_raise_an_unavailable_change_of_status_error_when_status_is_invalid(faker):
     assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
@@ -71,6 +75,7 @@ def test_fail_should_raise_an_unavailable_change_of_status_error_when_status_is_
         assistance_request.fail()
 
 
+@pytest.mark.unit
 def test_success_should_mark_as_succeeded(faker):
     assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
@@ -88,6 +93,7 @@ def test_success_should_mark_as_succeeded(faker):
     assert event.payload == {"id": str(assistance_request.id)}
 
 
+@pytest.mark.unit
 def test_success_should_raise_an_unavailable_change_of_status_error_when_status_is_invalid(faker):
     assistance_request = AssistanceRequest.stored(
         id=UUID(faker.uuid4()),
@@ -100,6 +106,7 @@ def test_success_should_raise_an_unavailable_change_of_status_error_when_status_
         assistance_request.success()
 
 
+@pytest.mark.unit
 def test_equals_should_be_true_when_compares_same_requests(faker):
     assistance_request = AssistanceRequest.new(
         id=UUID(faker.uuid4()),
@@ -110,6 +117,7 @@ def test_equals_should_be_true_when_compares_same_requests(faker):
     assert assistance_request == assistance_request
 
 
+@pytest.mark.unit
 def test_equals_should_be_true_when_compares_different_attributes_and_same_id(faker):
     id = UUID(faker.uuid4())
     assistance_request_1 = AssistanceRequest.new(

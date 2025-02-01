@@ -10,6 +10,7 @@ from src.infrastructure.ports.subscriber.events import AssistanceCreatedEvent, A
 from src.seedwork.infrastructure.queues.exceptions import RecoverableError, UnrecoverableError
 
 
+@pytest.mark.unit
 def test_assistance_created_event_handler(faker):
     event = AssistanceCreatedEvent(payload={"id": faker.uuid4()})
     service = Mock(SendAssistanceService)
@@ -22,6 +23,7 @@ def test_assistance_created_event_handler(faker):
     service.execute.assert_called_once()
 
 
+@pytest.mark.unit
 def test_assistance_created_event_handler_with_unrecoverable_error(faker):
     event = AssistanceCreatedEvent(payload={"id": faker.uuid4()})
     service = Mock(SendAssistanceService)
@@ -35,6 +37,7 @@ def test_assistance_created_event_handler_with_unrecoverable_error(faker):
         handler.handle(event)
 
 
+@pytest.mark.unit
 def test_assistance_created_event_handler_with_recoverable_error(faker):
     event = AssistanceCreatedEvent(payload={"id": faker.uuid4()})
     service = Mock(SendAssistanceService)

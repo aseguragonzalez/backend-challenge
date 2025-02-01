@@ -6,6 +6,7 @@ from src.application.services import FailAssistanceRequest, FailAssistanceServic
 from src.domain.entities import AssistanceRequest
 
 
+@pytest.mark.unit
 def test_execute_should_set_assistance_request_as_failed(faker, assistances_repository):
     id = faker.uuid4()
     request = FailAssistanceRequest(id=id)
@@ -21,6 +22,7 @@ def test_execute_should_set_assistance_request_as_failed(faker, assistances_repo
     assistances_repository.save.assert_called_once_with(entity=assistance_request)
 
 
+@pytest.mark.unit
 def test_execute_should_raise_error_when_execution_fails(faker, assistances_repository, channels_service):
     id = faker.uuid4()
     request = FailAssistanceRequest(id=id)

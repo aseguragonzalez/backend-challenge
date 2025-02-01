@@ -10,6 +10,7 @@ from src.domain.value_objects import Topic
 from src.infrastructure.adapters.services import EmailChannel
 
 
+@pytest.mark.unit
 def test_send_should_send_email(faker, email_settings):
     logger = Mock(Logger)
     client = Mock(SMTP)
@@ -25,6 +26,7 @@ def test_send_should_send_email(faker, email_settings):
     )
 
 
+@pytest.mark.unit
 def test_send_should_raise_unavailable_channel_error_when_client_raises_exception(faker, email_settings):
     logger = Mock(Logger)
     client = Mock(SMTP)
