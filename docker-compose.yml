@@ -8,6 +8,8 @@ services:
     depends_on:
       db-init:
         condition: service_completed_successfully
+      dind:
+        condition: service_started
     env_file:
     - .env
     networks:
@@ -42,6 +44,15 @@ services:
     networks:
     - default
 
+  dind:
+    image: docker:dind
+    privileged: true
+    command: [--host=tcp://0.0.0.0:2375, --storage-driver=overlay2]
+    environment:
+    - DOCKER_TLS_CERTDIR=
+    networks:
+    - default
+
   dlq:
     build:
       context: .
@@ -51,6 +62,8 @@ services:
     depends_on:
       db-init:
         condition: service_completed_successfully
+      dind:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
         restart: true
@@ -70,6 +83,8 @@ services:
     depends_on:
       db-init:
         condition: service_completed_successfully
+      dind:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
         restart: true
@@ -89,6 +104,8 @@ services:
     depends_on:
       db-init:
         condition: service_completed_successfully
+      dind:
+        condition: service_started
       rabbitmq:
         condition: service_healthy
         restart: true
@@ -112,9 +129,9 @@ services:
     container_name: rabbitmq
     healthcheck:
       test: [CMD, /etc/rabbitmq/healthcheck.sh]
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 5
+      retries: 10
     networks:
     - default
     ports:
@@ -128,9 +145,9 @@ services:
       dockerfile: ./Dockerfile
     healthcheck:
       test: [CMD-SHELL, /home/wiremock/healthcheck.sh]
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 5
+      retries: 10
     networks:
     - default
     ports:
@@ -146,9 +163,9 @@ services:
     - ./deploy/smtp/.env
     healthcheck:
       test: [CMD-SHELL, /home/smtp4dev/healthcheck.sh]
-      interval: 30s
+      interval: 10s
       timeout: 10s
-      retries: 5
+      retries: 10
     networks:
     - default
     ports:
@@ -160,3 +177,4 @@ volumes:
 networks:
   default:
     name: backend-challenge-network
+    driver: bridge
