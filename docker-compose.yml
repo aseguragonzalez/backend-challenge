@@ -95,6 +95,27 @@ services:
     volumes:
     - .:/home/app
 
+  reconciler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: subscriber
+    command: python src/infrastructure/ports/reconciler/main.py
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      dind:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+        restart: true
+    env_file:
+    - .env
+    networks:
+    - default
+    volumes:
+    - .:/home/app
+
   subscriber:
     build:
       context: .
