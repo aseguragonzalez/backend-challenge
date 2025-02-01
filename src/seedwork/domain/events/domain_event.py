@@ -11,4 +11,4 @@ class DomainEvent(ABC):
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     id: UUID = field(default_factory=uuid4)
     payload: dict[str, Any] = field(default_factory=dict)
-    version: str = field(default="1.0")
+    version: str = field(default="v1.0")

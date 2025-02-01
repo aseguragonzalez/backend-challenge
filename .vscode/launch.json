@@ -13,6 +13,12 @@
       "type": "debugpy"
     },
     {
+      "module": "src.infrastructure.ports.reconciler.main",
+      "name": "Debug Reconciler",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
       "module": "src.infrastructure.ports.subscriber.main",
       "name": "Debug Subscriber",
       "request": "launch",
@@ -30,7 +36,7 @@
       ],
       "jinja": true,
       "module": "fastapi",
-      "name": "Debug FastAPI",
+      "name": "Debug API",
       "request": "launch",
       "type": "debugpy"
     }

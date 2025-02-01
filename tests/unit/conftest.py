@@ -74,12 +74,28 @@ def events_db_settings(faker) -> MongoDbEventsDbSettings:
         collection_name=faker.uuid4(),
         database_name=faker.uuid4(),
         database_url=faker.uuid4(),
+        processed_collection_name=faker.uuid4(),
     )
 
 
 @pytest.fixture
 def db_events_collection(events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient) -> Collection:
     return mongo_client[events_db_settings.database_name][events_db_settings.collection_name]
+
+
+@pytest.fixture
+def db_processed_events_collection(
+    events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient
+) -> Collection:
+    return mongo_client[events_db_settings.database_name][events_db_settings.processed_collection_name]
+
+
+@pytest.fixture
+def db_dlq_events_collection(
+    faker, events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient
+) -> Collection:
+    db_dlq_colletion_name = faker.uuid4()
+    return mongo_client[events_db_settings.database_name][db_dlq_colletion_name]
 
 
 @pytest.fixture

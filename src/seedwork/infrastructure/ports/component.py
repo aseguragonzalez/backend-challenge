@@ -22,12 +22,12 @@ class Component:
         self._reboots_number = 0
         self._last_reboot: datetime | None = None
 
-    def execute(self, create_app: Callable[[], AppBase]) -> None:
+    def execute(self, create_app: Callable[[], AppBase], **kwargs: dict[str, str]) -> None:
         while self._is_running:
             app = create_app()
             self._logger.info(f"Starting {self._app_name}")
             try:
-                app.run()
+                app.run(**kwargs)
             except KeyboardInterrupt:
                 self._quit()
             except AMQPConnectionError:
