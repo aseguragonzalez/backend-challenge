@@ -1,5 +1,6 @@
 import logging
 import os
+from typing import Any
 
 from src.infrastructure.ports.reconciler.app import App
 from src.infrastructure.ports.reconciler.dependencies import configure
@@ -13,12 +14,12 @@ if __name__ == "__main__":
     component = Component(
         logger=logger,
         app_name="Reconciler",
-        max_retries=int(os.getenv("SETTINGS_MAX_RETRIES")),
-        minutes_between_errors=int(os.getenv("SETTINGS_MINUTES_BETWEEN_ERRORS")),
-        seconds_between_retries=int(os.getenv("SETTINGS_SECONDS_BETWEEN_RETRIES")),
+        max_retries=int(os.environ["SETTINGS_MAX_RETRIES"]),
+        minutes_between_errors=int(os.environ["SETTINGS_MINUTES_BETWEEN_ERRORS"]),
+        seconds_between_retries=int(os.environ["SETTINGS_SECONDS_BETWEEN_RETRIES"]),
     )
-    component.execute(
-        lambda: configure(app=App(logger=logger), logger=logger),
-        delay_time=int(os.getenv("SETTINGS_DELAY_TIME")),
-        timeout_interval=int(os.getenv("SETTINGS_TIMEOUT_INTERVAL")),
-    )
+    params: dict[str, Any] = {
+        "delay_time": int(os.environ["SETTINGS_DELAY_TIME"]),
+        "timeout_interval": int(os.environ["SETTINGS_TIMEOUT_INTERVAL"]),
+    }
+    component.execute(lambda: configure(app=App(logger=logger), logger=logger), **params)
