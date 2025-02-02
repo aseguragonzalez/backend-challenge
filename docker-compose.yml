@@ -99,7 +99,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: subscriber
+    container_name: reconciler
     command: python src/infrastructure/ports/reconciler/main.py
     depends_on:
       db-init:
