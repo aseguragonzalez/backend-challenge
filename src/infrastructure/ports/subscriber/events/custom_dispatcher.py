@@ -1,5 +1,3 @@
-from typing import TypeVar
-
 from src.infrastructure.ports.subscriber.events import (
     AssistanceCreatedEvent,
     AssistanceFailedEvent,
@@ -8,11 +6,8 @@ from src.infrastructure.ports.subscriber.events import (
 from src.seedwork.infrastructure.events import Event, EventHandler, EventsDispatcher
 
 
-TEvent = TypeVar("TEvent", bound=Event)
-
-
 class CustomDispatcher(EventsDispatcher):
-    def __init__(self, event_handlers: dict[TEvent, list[EventHandler[TEvent]]]):
+    def __init__(self, event_handlers: dict[type[Event], list[EventHandler[Event]]]):
         super().__init__(event_handlers=event_handlers)
 
     def get_concrete_event(self, event: Event) -> Event:
