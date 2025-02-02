@@ -20,17 +20,19 @@ class ServiceProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def register(self, service_type: TService, type_rule: TService | Callable[["ServiceProvider"], TService]) -> None:
+    def register(
+        self, service_type: type[TService], type_rule: type[TService] | Callable[["ServiceProvider"], TService]
+    ) -> None:
         raise NotImplementedError
 
     @abstractmethod
     def register_singleton(
-        self, service_type: TService, type_rule: TService | Callable[["ServiceProvider"], TService]
+        self, service_type: type[TService], type_rule: type[TService] | Callable[["ServiceProvider"], TService]
     ) -> None:
         raise NotImplementedError
 
     @abstractmethod
     def register_context_managed_singleton(
-        self, service_type: TService, type_rule: TService | Callable[["ServiceProvider"], TService]
+        self, service_type: type[TService], type_rule: type[TService] | Callable[["ServiceProvider"], TService]
     ) -> None:
         raise NotImplementedError
