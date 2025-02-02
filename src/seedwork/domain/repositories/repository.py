@@ -1,18 +1,17 @@
 from abc import ABC, abstractmethod
-from typing import Generic, TypeVar
+from typing import TypeVar
 
 from src.seedwork.domain.entities import AggregateRoot
 
 
 TId = TypeVar("TId")
-TAggregateRoot = TypeVar("TAggregateRoot", bound=AggregateRoot[TId])
 
 
-class Repository(ABC, Generic[TAggregateRoot]):
+class Repository(ABC, AggregateRoot[TId]):
     @abstractmethod
-    def save(self, entity: TAggregateRoot) -> None:
+    def save(self, entity: AggregateRoot[TId]) -> None:
         raise NotImplementedError()
 
     @abstractmethod
-    def get(self, id: TId) -> TAggregateRoot:
+    def get(self, id: TId) -> AggregateRoot[TId]:
         raise NotImplementedError()
