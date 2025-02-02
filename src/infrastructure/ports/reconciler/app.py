@@ -1,5 +1,6 @@
 import time
 from logging import Logger
+from typing import Any
 
 from src.infrastructure.ports.reconciler.services import ReconciliationService
 from src.seedwork.infrastructure.ports import AppBase
@@ -12,10 +13,10 @@ class App(AppBase):
         self._logger = logger
         self._is_running: bool = False
 
-    def run(self, *args: dict[str, str], **kwargs: dict[str, str]) -> None:
+    def run(self, *args: tuple[str, Any], **kwargs: dict[str, Any]) -> None:
         self._is_running = True
-        delay_time = int(kwargs["delay_time"])
-        timeout_interval = int(kwargs["timeout_interval"])
+        delay_time = int(str(kwargs["delay_time"]))
+        timeout_interval = int(str(kwargs["timeout_interval"]))
         with self._service_provider as sp:
             reconciliation_service = sp.get(ReconciliationService)
             while self._is_running:

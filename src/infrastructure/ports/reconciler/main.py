@@ -19,7 +19,7 @@ if __name__ == "__main__":
         seconds_between_retries=int(os.environ["SETTINGS_SECONDS_BETWEEN_RETRIES"]),
     )
     params: dict[str, Any] = {
-        "delay_time": int(os.environ["SETTINGS_DELAY_TIME"]),
-        "timeout_interval": int(os.environ["SETTINGS_TIMEOUT_INTERVAL"]),
+        "delay_time": os.environ["SETTINGS_DELAY_TIME"],
+        "timeout_interval": os.environ["SETTINGS_TIMEOUT_INTERVAL"],
     }
     component.execute(lambda: configure(app=App(logger=logger), logger=logger), **params)
