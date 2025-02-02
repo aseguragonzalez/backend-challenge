@@ -1,4 +1,5 @@
 from logging import Logger
+from typing import Any
 
 from src.seedwork.infrastructure.events import Event
 from src.seedwork.infrastructure.events.mongo_db import MongoDbEventsWatcher
@@ -12,7 +13,7 @@ class App(AppBase):
         super().__init__(service_provider=service_provider)
         self._logger = logger
 
-    def run(self, *args: dict[str, str], **kwargs: dict[str, str]) -> None:
+    def run(self, *args: tuple[str, Any], **kwargs: dict[str, Any]) -> None:
         with self.service_provider:
             watcher: MongoDbEventsWatcher = self.service_provider.get(MongoDbEventsWatcher)
             producer: Producer = self.service_provider.get(Producer)  # type: ignore
