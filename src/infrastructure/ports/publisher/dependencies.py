@@ -3,7 +3,7 @@ from logging import Logger
 
 from pymongo import MongoClient
 
-from src.infrastructure.ports.subscriber.app import App
+from src.infrastructure.ports.publisher.app import App
 from src.seedwork.infrastructure.events.mongo_db import MongoDbEventsDbSettings, MongoDbEventsWatcher
 from src.seedwork.infrastructure.events.mongo_db.dependencies import mongo_db_events_db
 from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvider
