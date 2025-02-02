@@ -8,16 +8,16 @@ from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvid
 
 
 def assistances_repository(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider):
         repository = sp.get(MongoDbAssistancesRepository)
         events_publisher = sp.get(EventsPublisher)
         return EventsInterceptor(repository=repository, events_publisher=events_publisher)
 
-    sp.register_singleton(AssistancesRepository, _configure)
+    sp.register_singleton(AssistancesRepository, configure)
 
 
 def mongo_db_assistances_repositories(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider):
         try:
             client_session: ClientSession = sp.get(ClientSession)
         except ValueError:
@@ -28,4 +28,4 @@ def mongo_db_assistances_repositories(sp: ServiceProvider) -> None:
         db_collection = client[mongo_db_settings.database_name][mongo_db_settings.collection_name]
         return MongoDbAssistancesRepository(db_collection=db_collection, client_session=client_session)
 
-    sp.register_singleton(MongoDbAssistancesRepository, _configure)
+    sp.register_singleton(MongoDbAssistancesRepository, configure)

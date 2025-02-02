@@ -8,10 +8,10 @@ def event_handlers(sp: ServiceProvider) -> None:
 
 
 def events_dispatcher(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider):
         event_handlers: dict[type, list] = {
             AssistanceCreatedEvent: [sp.get(AssistanceCreatedEventHandler)],
         }
         return CustomDispatcher(event_handlers=event_handlers)
 
-    sp.register_singleton(EventsDispatcher, _configure)
+    sp.register_singleton(EventsDispatcher, configure)

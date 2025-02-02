@@ -24,11 +24,11 @@ def email_settings(sp: ServiceProvider) -> None:
 
 
 def smtp_client(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider):
         email_settings = sp.get(EmailSettings)
         return SMTP(host=email_settings.server, port=email_settings.port)
 
-    sp.register_singleton(SMTP, _configure)
+    sp.register_singleton(SMTP, configure)
 
 
 def slack_channel(sp: ServiceProvider) -> None:

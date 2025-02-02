@@ -12,16 +12,16 @@ from src.seedwork.infrastructure.queues.rabbit_mq.dependencies import rabbit_mq_
 
 
 def _mongo_client(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider):
         database_url = (os.getenv("EVENTS_DATABASE_URL"),)
         client = MongoClient(database_url)
         return client
 
-    sp.register_singleton(MongoClient, _configure)
+    sp.register_singleton(MongoClient, configure)
 
 
 def _reconciliation_service(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider):
         mongo_client = sp.get(MongoClient)
         producer = sp.get(Producer)
         database_name = os.getenv("EVENTS_DATABASE_NAME")
@@ -35,7 +35,7 @@ def _reconciliation_service(sp: ServiceProvider) -> None:
             producer=producer,
         )
 
-    sp.register_singleton(ReconciliationService, _configure)
+    sp.register_singleton(ReconciliationService, configure)
 
 
 def _rabbit_mq_settings(sp: ServiceProvider) -> None:

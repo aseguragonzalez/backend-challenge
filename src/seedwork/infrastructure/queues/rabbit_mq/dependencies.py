@@ -14,7 +14,7 @@ def rabbit_mq_producer(sp: ServiceProvider) -> None:
 
 
 def rabbit_mq_connection(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider) -> None:
+    def configure(sp: ServiceProvider) -> None:
         settings = sp.get(RabbitMqSettings)
         credentials = PlainCredentials(
             username=settings.username,
@@ -28,4 +28,4 @@ def rabbit_mq_connection(sp: ServiceProvider) -> None:
         )
         return BlockingConnection(parameters=connection_parameters)
 
-    sp.register_singleton(BlockingConnection, _configure)
+    sp.register_singleton(BlockingConnection, configure)

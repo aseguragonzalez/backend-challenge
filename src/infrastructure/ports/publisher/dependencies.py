@@ -21,12 +21,12 @@ def _mongo_db_events_db_settings(sp: ServiceProvider) -> None:
 
 
 def _mongo_client(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider):
         settings = sp.get(MongoDbEventsDbSettings)
         client = MongoClient(settings.database_url)
         return client
 
-    sp.register_singleton(MongoClient, _configure)
+    sp.register_singleton(MongoClient, configure)
 
 
 def _rabbit_mq_settings(sp: ServiceProvider) -> None:
@@ -48,13 +48,13 @@ def _producer_settings(sp: ServiceProvider) -> None:
 
 
 def _events_watcher(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider):
         settings = sp.get(MongoDbEventsDbSettings)
         client = sp.get(MongoClient)
         db_collection = client[settings.database_name][settings.collection_name]
         return MongoDbEventsWatcher(db_collection=db_collection)
 
-    sp.register_singleton(MongoDbEventsWatcher, _configure)
+    sp.register_singleton(MongoDbEventsWatcher, configure)
 
 
 def configure(app: App, logger: Logger) -> App:
