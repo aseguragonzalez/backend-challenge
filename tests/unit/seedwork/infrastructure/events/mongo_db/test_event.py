@@ -4,55 +4,51 @@ from uuid import UUID
 import pytest
 
 from src.seedwork.infrastructure.events import Event
-from src.seedwork.infrastructure.events.mongo_db import Event as EventDto
+from src.seedwork.infrastructure.events.mongo_db import EventModel
 
 
 @pytest.mark.unit
-def test_to_dict(faker):
-    event = EventDto(
-        _id=str(faker.uuid4()),
+def test_to_document(faker):
+    event_model = EventModel(
+        id=str(faker.uuid4()),
         type="event_type",
         created_at=datetime.now(timezone.utc).isoformat(),
-        id=str(faker.uuid4()),
         payload=faker.pydict(),
-        version="1.0",
+        version="v1.0",
     )
 
-    event_dto = event.to_dict()
+    document = event_model.to_document()
 
-    assert event_dto == {
-        "_id": event._id,
-        "type": event.type,
-        "created_at": event.created_at,
-        "id": event.id,
-        "payload": event.payload,
-        "version": event.version,
+    assert document == {
+        "_id": event_model.id,
+        "created_at": event_model.created_at,
+        "payload": event_model.payload,
+        "type": event_model.type,
+        "version": event_model.version,
     }
 
 
 @pytest.mark.unit
-def test_from_dict(faker):
-    event_dict = {
+def test_from_document(faker):
+    document = {
         "_id": str(faker.uuid4()),
         "type": "event_type",
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "id": str(faker.uuid4()),
         "payload": faker.pydict(),
         "version": "1.0",
     }
 
-    event = EventDto.from_dict(data=event_dict)
+    event_model = EventModel.from_document(data=document)
 
-    assert event._id == event_dict["_id"]
-    assert event.type == event_dict["type"]
-    assert event.created_at == event_dict["created_at"]
-    assert event.id == event_dict["id"]
-    assert event.payload == event_dict["payload"]
-    assert event.version == event_dict["version"]
+    assert event_model.id == document["_id"]
+    assert event_model.type == document["type"]
+    assert event_model.created_at == document["created_at"]
+    assert event_model.payload == document["payload"]
+    assert event_model.version == document["version"]
 
 
 @pytest.mark.unit
-def test_from_integration_event(faker):
+def test_from_event(faker):
     event = Event(
         type="event_type",
         created_at=datetime.now(timezone.utc),
@@ -61,31 +57,29 @@ def test_from_integration_event(faker):
         version="1.0",
     )
 
-    event_dto = EventDto.from_integration_event(event=event)
+    event_model = EventModel.from_event(event=event)
 
-    assert event_dto._id == str(event.id)
-    assert event_dto.type == event.type
-    assert event_dto.created_at == event.created_at.isoformat()
-    assert event_dto.id == str(event.id)
-    assert event_dto.payload == event.payload
-    assert event_dto.version == event.version
+    assert event_model.id == str(event.id)
+    assert event_model.type == event.type
+    assert event_model.created_at == event.created_at.isoformat()
+    assert event_model.payload == event.payload
+    assert event_model.version == event.version
 
 
 @pytest.mark.unit
-def test_to_integration_event(faker):
-    event_dto = EventDto(
-        _id=str(faker.uuid4()),
+def test_to_event(faker):
+    event_model = EventModel(
+        id=str(faker.uuid4()),
         type="event_type",
         created_at=datetime.now(timezone.utc).isoformat(),
-        id=str(faker.uuid4()),
         payload=faker.pydict(),
         version="1.0",
     )
 
-    event = event_dto.to_integration_event()
+    event = event_model.to_event()
 
-    assert event.type == event_dto.type
-    assert event.created_at == datetime.fromisoformat(event_dto.created_at)
-    assert event.id == UUID(event_dto.id)
-    assert event.payload == event_dto.payload
-    assert event.version == event_dto.version
+    assert event.type == event_model.type
+    assert event.created_at == datetime.fromisoformat(event_model.created_at)
+    assert event.id == UUID(event_model.id)
+    assert event.payload == event_model.payload
+    assert event.version == event_model.version

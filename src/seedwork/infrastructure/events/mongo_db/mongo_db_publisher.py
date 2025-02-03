@@ -4,7 +4,7 @@ from pymongo.client_session import ClientSession
 from pymongo.collection import Collection
 
 from src.seedwork.infrastructure.events import Event, EventsPublisher
-from src.seedwork.infrastructure.events.mongo_db.event import Event as EventDto
+from src.seedwork.infrastructure.events.mongo_db.event_model import EventModel as EventModel
 
 
 class MongoDbPublisher(EventsPublisher):
@@ -13,6 +13,6 @@ class MongoDbPublisher(EventsPublisher):
         self._client_session = client_session
 
     def publish(self, events: list[Event]) -> None:
-        documents = [EventDto.from_integration_event(event).to_dict() for event in events]
+        documents = [EventModel.from_event(event).to_document() for event in events]
         self._db_collection.insert_many(documents=documents, session=self._client_session)
         return None

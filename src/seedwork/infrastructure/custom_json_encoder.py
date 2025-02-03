@@ -13,7 +13,7 @@ class CustomJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, UUID):
             return str(obj)
         elif isinstance(obj, Decimal):
-            return obj.to_eng_string()
+            return f"d|{obj}"
         elif isinstance(obj, bytes):
             return b64encode(obj).decode("utf-8")
         return super().default(obj)

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from src.domain.entities import AssistanceRequest as EntityAssistanceRequest
+from src.domain.entities import AssistanceRequest
 from src.domain.value_objects import Status, Topic
 
 
@@ -22,7 +22,7 @@ class AssistanceRequestModel:
         )
 
     @classmethod
-    def from_entity(cls, entity: EntityAssistanceRequest) -> "AssistanceRequestModel":
+    def from_entity(cls, entity: AssistanceRequest) -> "AssistanceRequestModel":
         return cls(
             id=str(entity.id),
             topic=entity.topic.value,
@@ -38,8 +38,8 @@ class AssistanceRequestModel:
             "status": self.status,
         }
 
-    def to_entity(self) -> EntityAssistanceRequest:
-        return EntityAssistanceRequest.stored(
+    def to_entity(self) -> AssistanceRequest:
+        return AssistanceRequest.stored(
             id=UUID(self.id),
             description=self.description,
             topic=Topic(self.topic),

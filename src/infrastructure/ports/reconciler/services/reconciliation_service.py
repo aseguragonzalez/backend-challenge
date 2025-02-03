@@ -4,7 +4,7 @@ from typing import Any
 
 from pymongo.collection import Collection
 
-from src.seedwork.infrastructure.events.mongo_db.event import Event
+from src.seedwork.infrastructure.events.mongo_db.event_model import EventModel
 from src.seedwork.infrastructure.queues.producer import Producer
 
 
@@ -52,5 +52,5 @@ class ReconciliationService:
         [self._publish_event(document) for document in self._db_events_collection.aggregate(pipeline)]
 
     def _publish_event(self, document: dict[str, Any]) -> dict[str, Any]:
-        self._producer.send_message(Event.from_dict(document).to_integration_event().to_bytes())
+        self._producer.send_message(EventModel.from_document(document).to_event().to_bytes())
         return document
