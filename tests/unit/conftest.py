@@ -75,6 +75,7 @@ def events_db_settings(faker) -> MongoDbEventsDbSettings:
         database_name=faker.uuid4(),
         database_url=faker.uuid4(),
         processed_collection_name=faker.uuid4(),
+        dlq_processed_collection_name=faker.uuid4(),
     )
 
 

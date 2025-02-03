@@ -5,5 +5,6 @@ from dataclasses import dataclass
 class MongoDbEventsDbSettings:
     database_name: str
     database_url: str
-    collection_name: str | None = None
-    processed_collection_name: str | None = None
+    collection_name: str
+    processed_collection_name: str
+    dlq_processed_collection_name: str

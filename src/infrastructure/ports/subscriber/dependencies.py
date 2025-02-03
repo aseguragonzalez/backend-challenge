@@ -32,42 +32,42 @@ from src.seedwork.infrastructure.queues.rabbit_mq.dependencies import (
 
 def _assistance_db_settings(sp: ServiceProvider) -> None:
     settings = MongoDbSettings(
-        database_url=os.getenv("ASSISTANCE_DATABASE_URL"),
-        database_name=os.getenv("ASSISTANCE_DATABASE_NAME"),
-        collection_name=os.getenv("ASSISTANCE_COLLECTION_NAME"),
+        database_url=os.environ["ASSISTANCE_DATABASE_URL"],
+        database_name=os.environ["ASSISTANCE_DATABASE_NAME"],
+        collection_name=os.environ["ASSISTANCE_COLLECTION_NAME"],
     )
     sp.register_singleton(MongoDbSettings, lambda _: settings)
 
 
 def _mongo_db_events_db_settings(sp: ServiceProvider) -> None:
     settings = MongoDbEventsDbSettings(
-        database_url=os.getenv("EVENTS_DATABASE_URL"),
-        database_name=os.getenv("EVENTS_DATABASE_NAME"),
-        collection_name=os.getenv("EVENTS_COLLECTION_NAME"),
-        processed_collection_name=os.getenv("EVENTS_PROCESSED_COLLECTION_NAME"),
+        database_url=os.environ["EVENTS_DATABASE_URL"],
+        database_name=os.environ["EVENTS_DATABASE_NAME"],
+        collection_name=os.environ["EVENTS_COLLECTION_NAME"],
+        processed_collection_name=os.environ["EVENTS_PROCESSED_COLLECTION_NAME"],
     )
     sp.register_singleton(MongoDbEventsDbSettings, lambda _: settings)
 
 
 def _rabbit_mq_settings(sp: ServiceProvider) -> None:
     settings = RabbitMqSettings(
-        host=os.getenv("RABBITMQ_HOST"),
-        port=os.getenv("RABBITMQ_PORT"),
-        username=os.getenv("RABBITMQ_USERNAME"),
-        password=os.getenv("RABBITMQ_PASSWORD"),
+        host=os.environ["RABBITMQ_HOST"],
+        port=os.environ["RABBITMQ_PORT"],
+        username=os.environ["RABBITMQ_USERNAME"],
+        password=os.environ["RABBITMQ_PASSWORD"],
     )
     sp.register_singleton(RabbitMqSettings, lambda _: settings)
 
 
 def _consumer_settings(sp: ServiceProvider) -> None:
-    settings = ConsumerSettings(queue_name=os.getenv("RABBITMQ_CONSUMER_QUEUE_NAME"))
+    settings = ConsumerSettings(queue_name=os.environ["RABBITMQ_CONSUMER_QUEUE_NAME"])
     sp.register_singleton(ConsumerSettings, lambda _: settings)
 
 
 def _producer_settings(sp: ServiceProvider) -> None:
     settings = ProducerSettings(
-        exchange=os.getenv("RABBITMQ_PRODUCER_EXCHANGE_NAME"),
-        routing_key=os.getenv("RABBITMQ_PRODUCER_ROUTING_KEY"),
+        exchange=os.environ["RABBITMQ_PRODUCER_EXCHANGE_NAME"],
+        routing_key=os.environ["RABBITMQ_PRODUCER_ROUTING_KEY"],
     )
     sp.register_singleton(ProducerSettings, lambda _: settings)
 
