@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any
 
 from pydantic import Field
@@ -15,7 +16,7 @@ class BadRequestError(Error):
     )
 
     @classmethod
-    def from_validation_errors(cls, validation_errors: list[dict[str, Any]]) -> "BadRequestError":
+    def from_validation_errors(cls, validation_errors: Sequence[Any]) -> "BadRequestError":
         errors = []
         for error in validation_errors:
             if len(error["loc"]) > 1:

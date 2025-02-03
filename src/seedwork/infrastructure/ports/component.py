@@ -3,6 +3,7 @@ from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 from logging import Logger
 from time import sleep
+from typing import Any
 
 from pika.exceptions import AMQPConnectionError
 
@@ -22,7 +23,7 @@ class Component:
         self._reboots_number = 0
         self._last_reboot: datetime | None = None
 
-    def execute(self, create_app: Callable[[], AppBase], **kwargs: dict[str, str]) -> None:
+    def execute(self, create_app: Callable[[], AppBase], *args: tuple[Any], **kwargs: dict[str, Any]) -> None:
         while self._is_running:
             app = create_app()
             self._logger.info(f"Starting {self._app_name}")
@@ -56,7 +57,11 @@ class Component:
         self._logger.info(f"We are ready to reboot {self._app_name}.")
 
     def _should_reset_reboots_number(self) -> bool:
-        return datetime.now(timezone.utc) - self._last_reboot > timedelta(minutes=self._minutes_between_errors)
+        if self._last_reboot is None:
+            return False
+
+        difference: timedelta = datetime.now(timezone.utc) - self._last_reboot
+        return difference > timedelta(minutes=self._minutes_between_errors)
 
     def _get_sleep_time(self) -> float:
         return (math.e**self._reboots_number) * self._seconds_between_retries

@@ -13,8 +13,8 @@ if __name__ == "__main__":
     component = Component(
         logger=logger,
         app_name="DLQ subscriber",
-        max_retries=int(os.getenv("SETTINGS_MAX_RETRIES")),
-        minutes_between_errors=int(os.getenv("SETTINGS_MINUTES_BETWEEN_ERRORS")),
-        seconds_between_retries=int(os.getenv("SETTINGS_SECONDS_BETWEEN_RETRIES")),
+        max_retries=int(os.environ["SETTINGS_MAX_RETRIES"]),
+        minutes_between_errors=int(os.environ["SETTINGS_MINUTES_BETWEEN_ERRORS"]),
+        seconds_between_retries=int(os.environ["SETTINGS_SECONDS_BETWEEN_RETRIES"]),
     )
     component.execute(lambda: configure(app=App(logger=logger), logger=logger))

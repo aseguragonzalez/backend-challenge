@@ -34,8 +34,7 @@ def test_create_should_insert_a_document(faker, db_events_collection):
 
     document = db_events_collection.find_one({"_id": str(event.id)})
 
-    assert document is not None
     assert document["_id"] == str(event.id)
     assert document["type"] == event.type
     assert document["created_at"] == event.created_at.isoformat()
-    assert document["id"] == str(event.id)
+    assert document["payload"] == event.payload

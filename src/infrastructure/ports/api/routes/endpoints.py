@@ -26,16 +26,16 @@ router = APIRouter(**requests_endpoint_definition)
 def create_request(
     request: CreateNewAssistanceRequest, service: CreateAssistanceService = Depends(create_assistance_service)
 ) -> CreatedRequestResponse:
-    request = CreateAssistanceRequest(topic=request.topic, description=request.description)
-    service.execute(request=request)
-    return CreatedRequestResponse(model=AssistanceAccepted.build(id=request.id))
+    create_assistance_request = CreateAssistanceRequest(topic=request.topic, description=request.description)
+    service.execute(request=create_assistance_request)
+    return CreatedRequestResponse(model=AssistanceAccepted.build(id=create_assistance_request.id))
 
 
 @router.get(**requests_endpoint_get)
 def retrieve_request(
     assistance_id: UUID, service: GetAssistanceService = Depends(get_assistance_service)
 ) -> AssistanceRequestResponse:
-    request = GetAssistanceRequest(id=assistance_id)
-    assistance_request = service.execute(request=request)
+    get_assistance_request = GetAssistanceRequest(id=assistance_id)
+    assistance_request = service.execute(request=get_assistance_request)
     assistance_request_model = AssistanceRequest.from_entity(assistance_request=assistance_request)
     return AssistanceRequestResponse(model=assistance_request_model)

@@ -10,17 +10,19 @@ from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvid
 
 def events_db_settings(sp: ServiceProvider) -> None:
     settings = MongoDbEventsDbSettings(
-        database_url=os.getenv("EVENTS_DATABASE_URL"),
-        database_name=os.getenv("EVENTS_DATABASE_NAME"),
-        collection_name=os.getenv("EVENTS_COLLECTION_NAME"),
+        database_url=os.environ["EVENTS_DATABASE_URL"],
+        database_name=os.environ["EVENTS_DATABASE_NAME"],
+        collection_name=os.environ["EVENTS_COLLECTION_NAME"],
+        processed_collection_name=os.environ["EVENTS_PROCESSED_COLLECTION_NAME"],
+        dlq_processed_collection_name=os.environ["EVENTS_DLQ_PROCESSED_COLLECTION_NAME"],
     )
     sp.register_singleton(MongoDbEventsDbSettings, lambda _: settings)
 
 
 def mongo_db_events_db(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider) -> MongoDbEventsDb:
         try:
-            client_session: ClientSession = sp.get(ClientSession)
+            client_session: ClientSession | None = sp.get(ClientSession)
         except ValueError:
             client_session = None
 
@@ -29,13 +31,13 @@ def mongo_db_events_db(sp: ServiceProvider) -> None:
         db_collection = mongo_client[settings.database_name][settings.processed_collection_name]
         return MongoDbEventsDb(db_collection=db_collection, client_session=client_session)
 
-    sp.register_singleton(EventsDb, _configure)
+    sp.register_singleton(EventsDb, configure)  # type: ignore
 
 
 def mongo_db_events_db_publisher(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider) -> MongoDbPublisher:
         try:
-            client_session: ClientSession = sp.get(ClientSession)
+            client_session: ClientSession | None = sp.get(ClientSession)
         except ValueError:
             client_session = None
 
@@ -44,4 +46,4 @@ def mongo_db_events_db_publisher(sp: ServiceProvider) -> None:
         db_collection = mongo_client[settings.database_name][settings.collection_name]
         return MongoDbPublisher(db_collection=db_collection, client_session=client_session)
 
-    sp.register_singleton(EventsPublisher, _configure)
+    sp.register_singleton(EventsPublisher, configure)  # type: ignore

@@ -1,3 +1,5 @@
+from collections.abc import Generator
+from typing import Any
 from unittest.mock import Mock
 
 import pytest
@@ -13,11 +15,11 @@ from src.seedwork.infrastructure.queues.rabbit_mq import RabbitMqSettings
 
 
 @pytest.fixture(scope="session")
-def rabbitmq_container(request):
+def rabbitmq_container(request: pytest.FixtureRequest) -> RabbitMqContainer:
     rabbitmq = RabbitMqContainer("rabbitmq:3.9.10")
     rabbitmq.start()
 
-    def remove_container():
+    def remove_container() -> None:
         rabbitmq.stop()
 
     request.addfinalizer(remove_container)
@@ -26,13 +28,13 @@ def rabbitmq_container(request):
 
 
 @pytest.fixture
-def rabbitmq_connection(rabbitmq_container):
+def rabbitmq_connection(rabbitmq_container: RabbitMqContainer) -> Generator[BlockingConnection, None, None]:
     with BlockingConnection(parameters=rabbitmq_container.get_connection_params()) as connection:
         yield connection
 
 
 @pytest.fixture
-def rabbit_mq_settings(rabbitmq_container):
+def rabbit_mq_settings(rabbitmq_container: RabbitMqContainer) -> RabbitMqSettings:
     params = rabbitmq_container.get_connection_params()
     return RabbitMqSettings(
         host=params.host,
@@ -43,11 +45,11 @@ def rabbit_mq_settings(rabbitmq_container):
 
 
 @pytest.fixture(scope="session")
-def mongodb_container(request):
+def mongodb_container(request: pytest.FixtureRequest) -> MongoDbContainer:
     mongodb_container = MongoDbContainer("mongo:6.0")
     mongodb_container.start()
 
-    def remove_container():
+    def remove_container() -> None:
         mongodb_container.stop()
 
     request.addfinalizer(remove_container)
@@ -55,12 +57,12 @@ def mongodb_container(request):
 
 
 @pytest.fixture
-def mongo_client(mongodb_container):
+def mongo_client(mongodb_container: MongoDbContainer) -> MongoClient[Any]:
     return MongoClient(mongodb_container.get_connection_url())
 
 
 @pytest.fixture(scope="session")
-def email_server_container(request):
+def email_server_container(request: pytest.FixtureRequest) -> DockerContainer:
     email_server_container = DockerContainer("rnwood/smtp4dev")
     email_server_container.with_name("smtp")
     email_server_container.with_exposed_ports(25, 25)
@@ -69,7 +71,7 @@ def email_server_container(request):
     email_server_container.with_env("RelayOptions__Password", "email_secret")
     email_server_container.start()
 
-    def remove_container():
+    def remove_container() -> None:
         email_server_container.stop()
 
     request.addfinalizer(remove_container)
@@ -77,7 +79,7 @@ def email_server_container(request):
 
 
 @pytest.fixture
-def email_settings(email_server_container):
+def email_settings(email_server_container: DockerContainer) -> EmailSettings:
     return EmailSettings(
         from_email="source@email.com",
         to_email="source@email.com",
@@ -89,7 +91,7 @@ def email_settings(email_server_container):
 
 
 @pytest.fixture
-def unit_of_work_mock():
+def unit_of_work_mock() -> UnitOfWork:
     # HACK: We have to mock uow beacuse MongoDb transactions are not available without a replica set
     unit_of_work = Mock(UnitOfWork)
     unit_of_work.__enter__ = Mock(return_value=unit_of_work)

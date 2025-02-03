@@ -4,8 +4,8 @@ from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvid
 
 
 def queue_publisher(sp: ServiceProvider) -> None:
-    sp.register_singleton(EventsPublisher, QueuePublisher)
+    sp.register_singleton(EventsPublisher, QueuePublisher)  # type: ignore
 
 
 def queue_subscriber(sp: ServiceProvider) -> None:
-    sp.register_singleton(EventsSubscriber, QueueSubscriber)
+    sp.register_singleton(EventsSubscriber, QueueSubscriber)  # type: ignore

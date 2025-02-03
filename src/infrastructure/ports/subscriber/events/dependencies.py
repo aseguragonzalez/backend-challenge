@@ -1,3 +1,5 @@
+from typing import Any
+
 from src.domain.services import ChannelsService
 from src.domain.value_objects import Topic
 from src.infrastructure.adapters.services import EmailChannel, SlackChannel
@@ -15,14 +17,14 @@ from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvid
 
 
 def channel_service(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider) -> ChannelsService:
         channels_map = {
             Topic.Pricing.value: sp.get(EmailChannel),
             Topic.Sales.value: sp.get(SlackChannel),
         }
         return ChannelsService(channels_map=channels_map)
 
-    sp.register_singleton(ChannelsService, _configure)
+    sp.register_singleton(ChannelsService, configure)
 
 
 def event_handlers(sp: ServiceProvider) -> None:
@@ -32,12 +34,12 @@ def event_handlers(sp: ServiceProvider) -> None:
 
 
 def events_dispatcher(sp: ServiceProvider) -> None:
-    def _configure(sp: ServiceProvider):
-        event_handlers: dict[type, list] = {
+    def configure(sp: ServiceProvider) -> CustomDispatcher:
+        event_handlers: dict[type, list[Any]] = {
             AssistanceCreatedEvent: [sp.get(AssistanceCreatedEventHandler)],
             AssistanceFailedEvent: [sp.get(AssistanceFailedEventHandler)],
             AssistanceSucceededEvent: [sp.get(AssistanceSucceededEventHandler)],
         }
         return CustomDispatcher(event_handlers=event_handlers)
 
-    sp.register_singleton(EventsDispatcher, _configure)
+    sp.register_singleton(EventsDispatcher, configure)  # type: ignore

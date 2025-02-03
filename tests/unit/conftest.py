@@ -1,8 +1,10 @@
+from typing import Any
 from unittest.mock import Mock
 
 import pytest
+from faker import Faker
 from mongomock import MongoClient
-from mongomock.collection import Collection
+from pymongo.synchronous.collection import Collection
 
 from src.application.services import CreateAssistanceService, GetAssistanceService
 from src.domain.repositories import AssistancesRepository
@@ -35,7 +37,7 @@ def get_assistance_service() -> GetAssistanceService:
 
 
 @pytest.fixture
-def events_db_mock() -> EventsDb:
+def events_db_mock() -> EventsDb[Any]:
     events_db = Mock(EventsDb)
     events_db.exist.return_value = False
     events_db.create.return_value = None
@@ -50,56 +52,59 @@ def events_dispatcher_mock() -> EventsDispatcher:
 
 
 @pytest.fixture
-def mongo_client() -> MongoClient:
+def mongo_client() -> MongoClient:  # type: ignore
     return MongoClient()
 
 
 @pytest.fixture
-def mongo_db_settings(faker) -> MongoDbSettings:
+def mongo_db_settings(faker: Faker) -> MongoDbSettings:
     return MongoDbSettings(
-        collection_name=faker.uuid4(),
-        database_name=faker.uuid4(),
-        database_url=faker.uuid4(),
+        collection_name=faker.word(),
+        database_name=faker.word(),
+        database_url=faker.word(),
     )
 
 
 @pytest.fixture
-def db_collection(mongo_db_settings: MongoDbSettings, mongo_client: MongoClient) -> Collection:
+def db_collection(mongo_db_settings: MongoDbSettings, mongo_client: MongoClient) -> Collection[Any]:  # type: ignore
     return mongo_client[mongo_db_settings.database_name][mongo_db_settings.collection_name]
 
 
 @pytest.fixture
-def events_db_settings(faker) -> MongoDbEventsDbSettings:
+def events_db_settings(faker: Faker) -> MongoDbEventsDbSettings:
     return MongoDbEventsDbSettings(
-        collection_name=faker.uuid4(),
-        database_name=faker.uuid4(),
-        database_url=faker.uuid4(),
-        processed_collection_name=faker.uuid4(),
+        collection_name=faker.word(),
+        database_name=faker.word(),
+        database_url=faker.word(),
+        processed_collection_name=faker.word(),
+        dlq_processed_collection_name=faker.word(),
     )
 
 
 @pytest.fixture
-def db_events_collection(events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient) -> Collection:
+def db_events_collection(
+    events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient  # type: ignore
+) -> Collection[Any]:
     return mongo_client[events_db_settings.database_name][events_db_settings.collection_name]
 
 
 @pytest.fixture
 def db_processed_events_collection(
-    events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient
-) -> Collection:
+    events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient  # type: ignore
+) -> Collection[Any]:
     return mongo_client[events_db_settings.database_name][events_db_settings.processed_collection_name]
 
 
 @pytest.fixture
 def db_dlq_events_collection(
-    faker, events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient
-) -> Collection:
-    db_dlq_colletion_name = faker.uuid4()
+    faker: Faker, events_db_settings: MongoDbEventsDbSettings, mongo_client: MongoClient  # type: ignore
+) -> Collection[Any]:
+    db_dlq_colletion_name = faker.word()
     return mongo_client[events_db_settings.database_name][db_dlq_colletion_name]
 
 
 @pytest.fixture
-def email_settings(faker):
+def email_settings(faker: Faker) -> EmailSettings:
     return EmailSettings(
         from_email=faker.email(),
         to_email=faker.email(),
@@ -111,7 +116,7 @@ def email_settings(faker):
 
 
 @pytest.fixture
-def unit_of_work_mock():
+def unit_of_work_mock() -> UnitOfWork:
     # HACK: We have to mock uow beacuse MongoDb transactions are not available without a replica set
     unit_of_work = Mock(UnitOfWork)
     unit_of_work.__enter__ = Mock(return_value=unit_of_work)

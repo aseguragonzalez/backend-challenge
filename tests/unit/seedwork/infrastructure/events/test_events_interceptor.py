@@ -12,7 +12,7 @@ from src.seedwork.infrastructure.events import EventsInterceptor, EventsPublishe
 def test_get_should_call_repository_get_method(faker):
     events_publisher = Mock(EventsPublisher)
     aggregate_root = Mock(AggregateRoot)
-    repository = Mock(Repository[AggregateRoot[UUID]])
+    repository = Mock(Repository[AggregateRoot[UUID], UUID])
     repository.get.return_value = aggregate_root
     events_interceptor = EventsInterceptor(events_publisher=events_publisher, repository=repository)
     id = faker.uuid4()
@@ -28,7 +28,7 @@ def test_get_should_call_repository_save_and_publish_events():
     events_publisher = Mock(EventsPublisher)
     aggregate_root = Mock(AggregateRoot)
     aggregate_root.events = []
-    repository = Mock(Repository[AggregateRoot[UUID]])
+    repository = Mock(Repository[AggregateRoot[UUID], UUID])
     repository.save.return_value = None
     events_interceptor = EventsInterceptor(events_publisher=events_publisher, repository=repository)
 

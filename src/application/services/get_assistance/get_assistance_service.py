@@ -1,4 +1,4 @@
-from src.application.services.get_assistance.request import GetAssistanceRequest
+from src.application.services.get_assistance.get_assistance_request import GetAssistanceRequest
 from src.domain.entities import AssistanceRequest
 from src.domain.repositories import AssistancesRepository
 from src.seedwork.application.services import ApplicationService

@@ -1,5 +1,7 @@
 import logging
+from collections.abc import Generator
 from functools import lru_cache
+from typing import Any
 
 from fastapi import Depends
 from pymongo import MongoClient
@@ -20,19 +22,19 @@ logger = logging.getLogger(__name__)
 
 @lru_cache
 def settings() -> Settings:
-    return Settings()
+    return Settings()  # type: ignore
 
 
-def mongo_client(settings: Settings = Depends(settings)) -> MongoClient:
+def mongo_client(settings: Settings = Depends(settings)) -> MongoClient[Any]:
     return MongoClient(settings.assistance_database_url)
 
 
-def client_session(mongo_client: MongoClient = Depends(mongo_client)):
+def client_session(mongo_client: MongoClient[Any] = Depends(mongo_client)) -> Generator[ClientSession, None, None]:
     with mongo_client.start_session() as session:
         yield session
 
 
-def unit_of_work(client_session: ClientSession | None = Depends(client_session)):
+def unit_of_work(client_session: ClientSession | None = Depends(client_session)) -> Generator[UnitOfWork, None, None]:
     unit_of_work: UnitOfWork = MongoDbUnitOfWork(session=client_session)
     with unit_of_work as uow:
         yield uow
@@ -40,14 +42,14 @@ def unit_of_work(client_session: ClientSession | None = Depends(client_session))
 
 def assistance_repository(
     settings: Settings = Depends(settings),
-    mongo_client: MongoClient = Depends(mongo_client),
+    mongo_client: MongoClient[Any] = Depends(mongo_client),
     client_session: ClientSession | None = Depends(client_session),
-) -> AssistancesRepository:
+) -> EventsInterceptor:
     db_assistances_collection = mongo_client[settings.assistance_database_name][settings.assistance_collection_name]
     repository = MongoDbAssistancesRepository(db_collection=db_assistances_collection, client_session=client_session)
     db_events_collection = mongo_client[settings.events_database_name][settings.events_collection_name]
     events_publisher = MongoDbPublisher(db_collection=db_events_collection, client_session=client_session)
-    return EventsInterceptor(events_publisher=events_publisher, repository=repository)
+    return EventsInterceptor(events_publisher=events_publisher, repository=repository)  # type: ignore
 
 
 def create_assistance_service(

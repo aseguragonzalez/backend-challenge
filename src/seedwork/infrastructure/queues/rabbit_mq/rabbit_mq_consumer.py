@@ -13,7 +13,7 @@ class RabbitMqConsumer(Consumer):
     def __init__(self, connection: BlockingConnection, settings: ConsumerSettings) -> None:
         self._settings = settings
         self._channel = connection.channel()
-        self._consumer_tag: str = None
+        self._consumer_tag: str | None = None
 
     def __enter__(self) -> "RabbitMqConsumer":
         return self
@@ -23,10 +23,10 @@ class RabbitMqConsumer(Consumer):
             self._channel.close()
 
     def start(self, message_handler: Callable[[bytes], None]) -> None:
-        on_message_callback = self._on_message_callback(message_handler)
+        message_callback = self._message_callback(message_handler)
         self._consumer_tag = self._channel.basic_consume(
             queue=self._settings.queue_name,
-            on_message_callback=on_message_callback,
+            on_message_callback=message_callback,
         )
         self._channel.start_consuming()
 
@@ -34,10 +34,10 @@ class RabbitMqConsumer(Consumer):
         if self._channel.is_open:
             self._channel.stop_consuming(consumer_tag=self._consumer_tag)
 
-    def _on_message_callback(self, message_handler: Callable[[bytes], None]) -> None:
-        def _callback(
-            channel: BlockingChannel, method: Basic.Deliver, _: BasicProperties, body: bytes
-        ) -> Callable[[BlockingChannel, Basic.Deliver, BasicProperties, bytes], None]:
+    def _message_callback(
+        self, message_handler: Callable[[bytes], None]
+    ) -> Callable[[BlockingChannel, Basic.Deliver, BasicProperties, bytes], None]:
+        def message_callback(channel: BlockingChannel, method: Basic.Deliver, _: BasicProperties, body: bytes) -> None:
             try:
                 message_handler(body)
             except RecoverableError:
@@ -47,4 +47,4 @@ class RabbitMqConsumer(Consumer):
             else:
                 channel.basic_ack(delivery_tag=method.delivery_tag)
 
-        return _callback
+        return message_callback

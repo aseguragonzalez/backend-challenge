@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from pymongo import MongoClient
 from pymongo.collection import Collection
+from testcontainers.mongodb import MongoDbContainer
 
 from src.infrastructure.ports.api.dependencies import client_session, settings
 from src.infrastructure.ports.api.main import app
@@ -13,7 +14,7 @@ from src.infrastructure.ports.api.settings import Settings
 
 
 @pytest.fixture(scope="session")
-def api_settings(mongodb_container) -> Settings:
+def api_settings(mongodb_container: MongoDbContainer) -> Settings:
     mongo_db_url = mongodb_container.get_connection_url()
     instance = str(uuid4())
     return Settings(
@@ -28,17 +29,17 @@ def api_settings(mongodb_container) -> Settings:
 
 
 @pytest.fixture
-def db_collection(api_settings: Settings, mongo_client: MongoClient) -> Collection:
+def db_collection(api_settings: Settings, mongo_client: MongoClient[Any]) -> Collection[Any]:
     return mongo_client[api_settings.assistance_database_name][api_settings.assistance_collection_name]
 
 
 @pytest.fixture
-def db_events_collection(api_settings: Settings, mongo_client: MongoClient) -> Collection:
+def db_events_collection(api_settings: Settings, mongo_client: MongoClient[Any]) -> Collection[Any]:
     return mongo_client[api_settings.events_database_name][api_settings.events_collection_name]
 
 
 @pytest.fixture(autouse=True)
-def clean_db(api_settings: Settings, mongo_client: MongoClient) -> Generator[Any, Any, Any]:
+def clean_db(api_settings: Settings, mongo_client: MongoClient[Any]) -> Generator[Any, Any, Any]:
     mongo_client.drop_database(api_settings.assistance_database_name)
     mongo_client.drop_database(api_settings.events_database_name)
     yield

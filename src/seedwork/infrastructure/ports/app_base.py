@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from src.seedwork.infrastructure.ports.dependency_injection import BasicServiceProvider, ServiceProvider
 
@@ -20,7 +20,7 @@ class AppBase(ABC):
         dependencies(self._service_provider)
 
     @abstractmethod
-    def run(self, *args: dict[str, str], **kwargs: dict[str, str]) -> None:
+    def run(self, *args: tuple[str, Any], **kwargs: dict[str, Any]) -> None:
         raise NotImplementedError
 
     @abstractmethod
