@@ -37,6 +37,7 @@ def _mongo_db_events_db_settings(sp: ServiceProvider) -> None:
         database_name=os.environ["EVENTS_DATABASE_NAME"],
         collection_name=os.environ["EVENTS_COLLECTION_NAME"],
         processed_collection_name=os.environ["EVENTS_DLQ_PROCESSED_COLLECTION_NAME"],
+        dlq_processed_collection_name=os.environ["EVENTS_DLQ_PROCESSED_COLLECTION_NAME"],
     )
     sp.register_singleton(MongoDbEventsDbSettings, lambda _: settings)
 
