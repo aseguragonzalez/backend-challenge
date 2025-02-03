@@ -6,8 +6,8 @@ from src.seedwork.infrastructure.events.event import Event
 from src.seedwork.infrastructure.events.events_publisher import EventsPublisher
 
 
-class EventsInterceptor(Repository[AggregateRoot[UUID]]):
-    def __init__(self, events_publisher: EventsPublisher, repository: Repository[AggregateRoot[UUID]]) -> None:
+class EventsInterceptor(Repository[AggregateRoot[UUID], UUID]):
+    def __init__(self, events_publisher: EventsPublisher, repository: Repository[AggregateRoot[UUID], UUID]) -> None:
         self._repository = repository
         self._events_publisher = events_publisher
 
