@@ -15,8 +15,7 @@
           "--config-file=${workspaceFolder}/setup.cfg"
         ],
         "mypy-type-checker.ignorePatterns": [
-          "**/test_*.py",
-          "**/conftest.py"
+          "**/test_*.py"
         ],
         "python.testing.pytestArgs": [
           "tests/"
