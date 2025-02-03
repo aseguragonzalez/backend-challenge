@@ -14,7 +14,7 @@ class QueueSubscriber(EventsSubscriber):
     def __init__(
         self,
         consumer: Consumer,
-        events_db: EventsDb,
+        events_db: EventsDb[Event],
         unit_of_work: UnitOfWork,
         events_dispatcher: EventsDispatcher,
     ) -> None:

@@ -19,10 +19,11 @@ class App(AppBase):
             producer: Producer = self.service_provider.get(Producer)  # type: ignore
             watcher.watch(lambda event: self._publish_event(event=event, producer=producer))
 
-    def _publish_event(self, event: Event, producer: Producer) -> None:
+    def _publish_event(self, event: Event, producer: Producer) -> Event:
         self._logger.info(f"Sending event: {event.id}")
         producer.send_message(event.to_bytes())
         self._logger.info(f"Event sent: {event.id}")
+        return event
 
     def stop(self) -> None:
         watcher: MongoDbEventsWatcher = self.service_provider.get(MongoDbEventsWatcher)

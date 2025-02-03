@@ -6,15 +6,15 @@ from src.seedwork.infrastructure.queues.rabbit_mq import RabbitMqConsumer, Rabbi
 
 
 def rabbit_mq_consumer(sp: ServiceProvider) -> None:
-    sp.register_context_managed_singleton(Consumer, RabbitMqConsumer)
+    sp.register_context_managed_singleton(Consumer, RabbitMqConsumer)  # type: ignore
 
 
 def rabbit_mq_producer(sp: ServiceProvider) -> None:
-    sp.register_context_managed_singleton(Producer, RabbitMqProducer)
+    sp.register_context_managed_singleton(Producer, RabbitMqProducer)  # type: ignore
 
 
 def rabbit_mq_connection(sp: ServiceProvider) -> None:
-    def configure(sp: ServiceProvider) -> None:
+    def configure(sp: ServiceProvider) -> BlockingConnection:
         settings = sp.get(RabbitMqSettings)
         credentials = PlainCredentials(
             username=settings.username,

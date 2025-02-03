@@ -1,3 +1,5 @@
+from typing import Any
+
 from pymongo.client_session import ClientSession
 from pymongo.collection import Collection
 
@@ -6,7 +8,7 @@ from src.seedwork.infrastructure.events.mongo_db.event import Event as EventDto
 
 
 class MongoDbEventsDb(EventsDb[Event]):
-    def __init__(self, db_collection: Collection, client_session: ClientSession | None = None) -> None:
+    def __init__(self, db_collection: Collection[dict[str, Any]], client_session: ClientSession | None = None) -> None:
         self._db_collection = db_collection
         self._client_session = client_session
 
