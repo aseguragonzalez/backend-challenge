@@ -8,18 +8,18 @@ from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvid
 
 
 def assistances_repository(sp: ServiceProvider) -> None:
-    def configure(sp: ServiceProvider):
-        repository = sp.get(MongoDbAssistancesRepository)
-        events_publisher = sp.get(EventsPublisher)
-        return EventsInterceptor(repository=repository, events_publisher=events_publisher)
+    def configure(sp: ServiceProvider) -> EventsInterceptor:
+        repository: MongoDbAssistancesRepository = sp.get(MongoDbAssistancesRepository)
+        events_publisher = sp.get(EventsPublisher)  # type: ignore
+        return EventsInterceptor(repository=repository, events_publisher=events_publisher)  # type: ignore
 
-    sp.register_singleton(AssistancesRepository, configure)
+    sp.register_singleton(AssistancesRepository, configure)  # type: ignore
 
 
 def mongo_db_assistances_repositories(sp: ServiceProvider) -> None:
-    def configure(sp: ServiceProvider):
+    def configure(sp: ServiceProvider) -> MongoDbAssistancesRepository:
         try:
-            client_session: ClientSession = sp.get(ClientSession)
+            client_session: ClientSession | None = sp.get(ClientSession)
         except ValueError:
             client_session = None
 
