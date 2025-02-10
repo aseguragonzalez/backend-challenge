@@ -3,7 +3,7 @@ import os
 from pymongo import MongoClient
 from pymongo.client_session import ClientSession
 
-from src.seedwork.infrastructure.events import EventsDb, EventsPublisher
+from src.seedwork.infrastructure.events import Event, EventsDb, EventsPublisher
 from src.seedwork.infrastructure.events.mongo_db import MongoDbEventsDb, MongoDbEventsDbSettings, MongoDbPublisher
 from src.seedwork.infrastructure.ports.dependency_injection import ServiceProvider
 
@@ -31,7 +31,7 @@ def mongo_db_events_db(sp: ServiceProvider) -> None:
         db_collection = mongo_client[settings.database_name][settings.processed_collection_name]
         return MongoDbEventsDb(db_collection=db_collection, client_session=client_session)
 
-    sp.register_singleton(EventsDb, configure)  # type: ignore
+    sp.register_singleton(EventsDb[Event], configure)  # type: ignore
 
 
 def mongo_db_events_db_publisher(sp: ServiceProvider) -> None:
