@@ -17,27 +17,23 @@ You need to expose an API endpoint that will receive this call and depending on 
 
 ### Consistency
 
-Third parties could fail during the assistance request process. This could be due to the third party's server being down or the third party's inability to handle the request. Fallback mechanisms and retry policies are potential improvements to address this problem.
+Third-party services may fail during the assistance request process. This could be due to server downtime or an inability to process the request. Implementing fallback mechanisms and retry policies can mitigate this issue.
 
 ### Performance
 
-Third parties may respond slowly to assistance requests. This could be due to an overloaded server or the third party's inability to handle the request on time. A timeout mechanism and/or a separate thread could mitigate this, handling the third party's response so the bot can continue.
+Third-party services may respond slowly to assistance requests due to server overload or processing delays. A timeout mechanism and/or a separate thread to handle third-party responses can prevent the bot from being blocked.
 
 ### Scalability
 
-The product team may require more channels and, therefore, more third parties. As a consequence, the solution must be able to scale to handle additional third parties. A modular architecture could facilitate this by allowing new third parties to be added easily without affecting the existing ones.
+The product team may require support for additional communication channels, leading to the integration of more third-party services. Consequently, the solution must be scalable to accommodate these additions. A modular architecture can facilitate this by allowing new third-party services to be integrated without affecting existing ones.
 
-The volume of assistance requests could increase over time. Therefore, a distributed architecture that uses multiple instances to handle them in parallel could address this problem.
-
-### Idempotency
-
-An error in the bot could cause the same assistance request to be sent multiple times. This could be addressed by ensuring that each request is not processed multiple times.
+As the volume of assistance requests grows, a distributed architecture using multiple instances to handle requests in parallel can improve scalability.
 
 ## Evaluated options
 
 ### Option 1: Call directly the third party API
 
-This is the most straightforward approach, where the bot directly calls the third party's API through our internal API. The bot will be blocked until the third party responds.
+This is the simplest approach, where the bot directly calls the third-party API via an internal API. However, this approach blocks the bot until the third-party service responds.
 
 ```mermaid
 sequenceDiagram
@@ -61,19 +57,20 @@ Pros:
 
 Cons:
 
-- If the third party is slow to respond, the bot will be blocked.
-- If the third party is down, the bot will not be able to handle the request.
-- The bot must handle any error performed by the third party.
+- The bot is blocked if the third-party service is slow to respond.
+- If the third-party service is down, the bot cannot process the request.
+- The bot must handle all third-party errors.
 
 ### Option 2: Asyncronous request handling
 
-In this case, we propose separating the request into two steps: one creates the assistance request and persists it in storage, and the other processes the request by calling the third party's API and updating the status of the assistance request.
+This approach separates request processing into two steps: (1) creating and storing the assistance request, and (2) asynchronously calling the third-party API and updating the request status.
 
 ```mermaid
 sequenceDiagram
     actor Bot
     participant api as Assistance API
     participant db as Database
+    participant mb as Message Broker
     participant bh as Background Handler
     participant tp as Third Party
 
@@ -82,11 +79,11 @@ sequenceDiagram
     api->>db: Store Assistance Request
     activate db
     deactivate db
+    api->>mb: Send Assistance Request
+    activate mb
     api-->>Bot: Assistance Response
     deactivate api
-    bh->>db: Retrieve last Assistance Request
-    activate db
-    deactivate db
+    mb->>bh: Retrieve last Assistance Request
     activate bh
     bh->>tp: ThirdParty Message
     activate tp
@@ -95,8 +92,9 @@ sequenceDiagram
     bh->>db: Update Assistance Request
     activate db
     deactivate db
+    bh-->>mb: ack Assistance Request
+    deactivate mb
     deactivate bh
-
     Bot->>api: Ask for Assistance Request
     activate api
     api->>db: Retrieve Assistance Request
@@ -108,24 +106,20 @@ sequenceDiagram
 
 Pros:
 
-- The bot is not blocked and can continue while waiting for the third party's response.
-- The assistance request's background service handles any error during the third-party integration, isolating the Bot's execution from any third-party error.
-- This architecture enables the implementation of retry policies.
-- Background services can scale according to third-party requirements and in an isolated manner from the API workload.
+- The bot is not blocked while waiting for a third-party response.
+- Errors in third-party integrations are isolated from bot execution.
+- Enables retry policies.
+- Background services can scale independently of the API workload.
 
 Cons:
 
-- The bot has to poll the database to check if the third party's response is ready.
-- The background service requires a mechanism to process each request only once, even when the service restarts or scales.
-- The background handler will assume too many responsibilities if the product team demands new functionalities, such as supporting webhooks.
+- The bot must poll the database for updates.
+- The background service requires a mechanism to process each request only once, even during restarts or scaling.
+- Additional complexity is required to handle consistency issues when publishing messages and updating the database.
 
 ### Option 3: Outbox pattern
 
-The last approach could be considered an improvement on the second option, using the well-known pattern "Outbox" to notify of any changes in the storage, such as new assistance requests, and a message broker infrastructure to handle each integration.
-
-When an assistance request is received and saved, a producer(publisher) receives a notification from the storage and publishes a new message to the message broker. An isolated consumer(subscriber) can handle each new message, which triggers a call to the third party and updates the acceptance request status.
-
-This more complicated infrastructure, segregated into more components, will allow us to address new functionalities independently, facilitating the system's maintenance.
+This approach builds upon the second option by using the Outbox pattern to notify changes in storage and leveraging a message broker infrastructure for processing integrations.
 
 ```mermaid
 sequenceDiagram
@@ -175,18 +169,57 @@ sequenceDiagram
 
 This approach inherits every pro and con from the second option, extending some of them as we comment below.
 
-Pro:
+Pros:
 
-- Provide an easier way to handle system scalation, ensuring a better fit for each integration requirement.
-- Extending the system's functionalities can be more manageable, like adding new consumers (subscribers) to handle the new requirements.
+- Facilitates scalability by isolating integrations through separate components.
+- Simplifies system expansion, allowing additional consumers to handle new requirements.
 
 Cons:
 
-- The outbox pattern requires more complex components to consolidate published and pending messages. Additionally, its implementation relies on certain storage product features or capabilities that can lead to vendor locking.
-- Message-broker and event-driven architectures have some well-known problems that must be addressed, such as event consistency, compensation mechanisms, and event duplication.
+- Requires additional components for message consistency and event tracking.
+- May introduce vendor lock-in due to reliance on storage features for the Outbox pattern.
+- Event-driven architectures introduce complexities such as event duplication and compensation mechanisms.
 
 ## Decision Outcome
 
-According with the scope of the challenge, we decided to implement the second option, the asynchronous request handling, because it provides a good balance between complexity and scalability. This option allows us to handle third-party errors and provides a mechanism to retry requests. Additionally, it enables the bot to continue processing while waiting for the third party's response.
+Given the scope of the challenge, I chose to implement the third option, the Outbox pattern. This approach balances complexity and scalability, allowing for error handling and retry mechanisms while ensuring the bot can continue processing requests asynchronously.
 
-In a real scenario, we would consider the third option, the outbox pattern, to provide a more scalable and maintainable solution. However, the second option is more than enough to meet the challenge's requirements.
+However, this approach requires additional components, including a reconciliation service to manage the Outbox pattern and a message broker for handling messages. These components introduce maintenance and monitoring overhead.
+
+### Solution design
+
+To implement the solution we will need the following components:
+
+- **Assistance API**: Exposes an endpoint to receive the bot's assistance request.
+- **Database**: Stores the assistance requests.
+- **Producer**: Receives notifications from the database and publishes messages to the message broker.
+- **Message Broker**: Receives messages from the producer and sends them to the consumer.
+- **Consumer**: Receives messages from the message broker and processes the third party's integration. Each consumer is responsible to ensure that the message is processed only once.
+- **Death Letter Queue**: Receives messages that could not be processed by the consumer.
+- **Conciliation Service**: Handles the outbox pattern, ensuring that each message is published.
+- **Third Party**: Represents the third party's API.
+
+The following diagram illustrates the solution's architecture:
+
+```mermaid
+
+graph TD
+    subgraph "Assistance API"
+        A[API] --> B[Database]
+    end
+    subgraph "Background Services"
+        B --> |notify inserts| C[Producer]
+        C --> |publish events| D[Message Broker]
+        D --> |handle events| E[Consumer]
+        D --> |handle failed events| F[Death Letter Queue]
+    end
+    subgraph "Conciliation Service"
+        G[Conciliation Service] --> |read events not published| B
+        G --> |publish old events| D
+    end
+    subgraph "Third Party"
+        E --> |call| H[Third Party]
+    end
+```
+
+This architecture provides a scalable, fault-tolerant solution for handling assistance requests while ensuring system maintainability and extensibility.
