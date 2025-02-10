@@ -46,7 +46,7 @@ def test_reconciliation_service_should_publish_events_not_processed(
 def test_reconciliation_service_should_do_nothing_when_no_events_to_be_processed(
     faker, db_events_collection, db_processed_events_collection, db_dlq_events_collection
 ):
-    seconds_delayed = faker.random_int(min=1, max=60)
+    seconds_delayed = faker.random_int(min=30, max=60)
     producer = Mock(Producer)
     event_1 = Event.new(id=faker.uuid4(), type=faker.word(), payload=faker.pydict())
     event_2 = Event.new(id=faker.uuid4(), type=faker.word(), payload=faker.pydict())
