@@ -1,0 +1,99 @@
+{
+  "bindings": [
+    {
+      "arguments": {},
+      "destination": "events",
+      "destination_type": "queue",
+      "source": "events.ex",
+      "vhost": "/"
+    },
+    {
+      "arguments": {},
+      "destination": "events.dlq",
+      "destination_type": "queue",
+      "routing_key": "failed_key",
+      "source": "events.dlq.ex",
+      "vhost": "/"
+    }
+  ],
+  "exchanges": [
+    {
+      "arguments": {},
+      "auto_delete": false,
+      "durable": true,
+      "internal": false,
+      "name": "events.ex",
+      "type": "fanout",
+      "vhost": "/"
+    },
+    {
+      "arguments": {},
+      "auto_delete": false,
+      "durable": true,
+      "internal": false,
+      "name": "events.dlq.ex",
+      "type": "direct",
+      "vhost": "/"
+    }
+  ],
+  "global_parameters": [
+    {
+      "name": "internal_cluster_id",
+      "value": "rabbitmq-cluster-id-c0bFfKHb9r881hjsNV5Ejw"
+    }
+  ],
+  "parameters": [],
+  "permissions": [
+    {
+      "configure": ".*",
+      "read": ".*",
+      "user": "guest",
+      "vhost": "/",
+      "write": ".*"
+    }
+  ],
+  "policies": [],
+  "product_name": "RabbitMQ",
+  "product_version": "3.12.0",
+  "queues": [
+    {
+      "arguments": {
+        "x-dead-letter-exchange": "events.dlq.ex",
+        "x-dead-letter-routing-key": "failed_key",
+        "x-max-attempts": 5,
+        "x-max-length": 1000,
+        "x-message-ttl": 10000
+      },
+      "auto_delete": false,
+      "durable": true,
+      "name": "events",
+      "vhost": "/"
+    },
+    {
+      "arguments": {},
+      "auto_delete": false,
+      "durable": true,
+      "name": "events.dlq",
+      "vhost": "/"
+    }
+  ],
+  "rabbit_version": "3.12.0",
+  "rabbitmq_version": "3.12.0",
+  "topic_permissions": [],
+  "users": [
+    {
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "limits": {},
+      "name": "guest",
+      "password_hash": "wiLx6gwDkgCwFuYcPP/2eH4i1KMr20m7bQbPV6RafUqTTThT",
+      "tags": [
+        "administrator"
+      ]
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ]
+}

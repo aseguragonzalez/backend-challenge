@@ -1,0 +1,45 @@
+{
+  "configurations": [
+    {
+      "module": "src.infrastructure.ports.dlq.main",
+      "name": "Debug DLQ Subscriber",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
+      "module": "src.infrastructure.ports.publisher.main",
+      "name": "Debug Publisher",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
+      "module": "src.infrastructure.ports.reconciler.main",
+      "name": "Debug Reconciler",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
+      "module": "src.infrastructure.ports.subscriber.main",
+      "name": "Debug Subscriber",
+      "request": "launch",
+      "type": "debugpy"
+    },
+    {
+      "args": [
+        "dev",
+        "src/infrastructure/ports/api/main.py",
+        "--reload",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000"
+      ],
+      "jinja": true,
+      "module": "fastapi",
+      "name": "Debug API",
+      "request": "launch",
+      "type": "debugpy"
+    }
+  ],
+  "version": "0.2.0"
+}

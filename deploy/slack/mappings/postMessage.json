@@ -1,0 +1,21 @@
+{
+  "id": "9a236868-ba79-4cfe-844d-df22e419b78c",
+  "name": "Create a new message",
+  "priority": 1,
+  "request": {
+    "headers": {
+      "Authorization": {
+        "equalTo": "Bearer 2S2KWJwabXXFz6Z7xXwibw4C7D4"
+      }
+    },
+    "method": "POST",
+    "urlPattern": "/api/chat.postMessage\\?channel=([0-9A-Za-z]*)"
+  },
+  "response": {
+    "bodyFileName": "postMessageResponse.json",
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "status": 200
+  }
+}

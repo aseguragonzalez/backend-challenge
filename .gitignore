@@ -1,6 +1,12 @@
 # Created by https://www.toptal.com/developers/gitignore/api/macos,linux,pycharm,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,linux,pycharm,visualstudiocode
 
+.pytest_cache/
+.mypy_cache/
+__pycache__/
+.coverage
+coverage.xml
+pytest-report.xml
 ### Linux ###
 *~
 
